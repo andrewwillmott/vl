@@ -1,0 +1,9 @@
+s/VL_NS_BEGIN//
+s/VL_NS_END//
+s/VL_V_SUFF(\([^)]*\))/\1i/
+s/TElt/int/g
+s/TVec2/Vec2i/g
+s/TVec3/Vec3i/g
+s/TVec4/Vec4i/g
+/\#include/d
+/^\/\*/,/\*\//d
