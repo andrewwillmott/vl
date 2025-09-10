@@ -1,13 +1,13 @@
 /*
     File:       Mat4.cpp
 
-    Function:   Implements Mat4.h
+    Function:   Implements Mat4.hpp
 
     Copyright:  Andrew Willmott
 */
 
 
-#include "VL/Mat4.h"
+#include "VL/Mat4.hpp"
 
 
 TMat4::TMat4(TElt a, TElt b, TElt c, TElt d,

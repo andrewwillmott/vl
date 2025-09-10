@@ -6,7 +6,7 @@
     Copyright:  Andrew Willmott
 */
 
-#include <VLfd.h>
+#include "VLfd.hpp"
 
 #include <iomanip>
 

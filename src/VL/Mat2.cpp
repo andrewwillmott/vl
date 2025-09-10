@@ -1,12 +1,12 @@
 /*
     File:       Mat2.cpp
 
-    Function:   Implements Mat2.h
+    Function:   Implements Mat2.hpp
 
     Copyright:  Andrew Willmott
 */
 
-#include "VL/Mat2.h"
+#include "VL/Mat2.hpp"
 
 
 bool TMat2::operator == (const TMat2& m) const

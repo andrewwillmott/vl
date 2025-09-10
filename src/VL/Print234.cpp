@@ -8,7 +8,7 @@
 
 #ifndef VL_NO_STDIO
 
-#include "VL/Print234.h"
+#include "VL/Print234.hpp"
 
 #ifdef VL_PRINT_INT
 int fprint(FILE* file, const TVec2& v, int width, int prec) { return fprint(file, VL_FMT_VI "\n", 2, &v.x, width); }

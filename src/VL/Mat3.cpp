@@ -1,14 +1,14 @@
 /*
     File:       Mat3.cpp
 
-    Function:   Implements Mat3.h
+    Function:   Implements Mat3.hpp
 
     Copyright:  Andrew Willmott
 */
 
 
-#include "VL/Mat3.h"
-#include "VL/Vec4.h"
+#include "VL/Mat3.hpp"
+#include "VL/Vec4.hpp"
 
 
 TMat3::TMat3(const TMat2& m, TElt s) :

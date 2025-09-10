@@ -1,7 +1,7 @@
 /*
     File:       LibVLd.cpp
 
-    Purpose:    Compiles all code necessary for VLd.h.
+    Purpose:    Compiles all code necessary for VLd.hpp.
 
     Copyright:  Andrew Willmott
 */
@@ -9,9 +9,9 @@
 #define VL_V_ELT double
 #define VL_V_SUFF(X) X ## d
 
-#include "VL/Begin.h"
+#include "VL/Begin.hpp"
 
-#include "VL/Constants.h"
+#include "VL/Constants.hpp"
 #include "VL/Vec2.cpp"
 #include "VL/Vec3.cpp"
 #include "VL/Vec4.cpp"
@@ -41,4 +41,4 @@
 #include "VL/Print.cpp"
 #include "VL/Stream.cpp"
 
-#include "VL/End.h"
+#include "VL/End.hpp"

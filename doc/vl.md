@@ -21,7 +21,7 @@ The "VL" vector library provides a set of vector and matrix classes, as well as
 a number of functions for performing arithmetic with them. Equation-like syntax
 is supported via C++ class operators, for example:
 
-    #include "VLfd.h"
+    #include "VLfd.hpp"
 
     Vec3f   v(1.0, 2.0, 3.0);
     Mat3d   m(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
@@ -39,7 +39,7 @@ Vectors and matrices can be composed of either floats or doubles; the element
 type is indicated by the suffix. It is possible to mix (for example) matrices of
 doubles with vectors of floats, as in the example above. It is also possible to
 instantiate VL for other other element types with their own suffixes. (E.g.,
-complex numbers.) See the various VL*.h and LibVL*.cpp files for examples.
+complex numbers.) See the various VL*.hpp and LibVL*.cpp files for examples.
 
 VL also contains extensive support for sub-vector/matrices (slices), and
 implementations of some iterative solvers and factorisation routines.
@@ -86,18 +86,18 @@ particularly bare C-style arrays. See the corresponding constructors.
 
 If you only need the 2/3/4 types and basic operations, use includes of the form:
 
-    #include "VL234f.h"
-    #include "VL234i.h"
+    #include "VL234f.hpp"
+    #include "VL234i.hpp"
 
 For the full library, including the generic Vec/Mat classes, use, e.g.,
 
-    #include "VLf.h"
-    #include "VLd.h"
+    #include "VLf.hpp"
+    #include "VLd.hpp"
 
 If you want to use double-based matrices that act on float-based vectors, which
 can be a useful space versus accuracy trade-off, use
 
-    #include "VLfd.h"
+    #include "VLfd.hpp"
 
 Further details can be found in the [compiling section](#compiling-with-vl).
 
@@ -116,7 +116,7 @@ For matrices an element can also be accessed using standard row/column notation:
 For the 2/3/4 types, you can also use direct access:
 
     v2.x = 3.0;
-    m3.z.y = v2.y;      // See also VL/Swizzle.h
+    m3.z.y = v2.y;      // See also VL/Swizzle.hpp
 
 The size can be obtained from the Elts() method for vectors, and the Rows() and
 Cols() methods for matrices. (These are constants for the fixed types.) To
@@ -193,7 +193,7 @@ In the above, VecN is either a Vec or a Vec[234], and you should append 'f' or
 
 With the full version of the library, you can also use various standard math
 component-wise functions, such as sin(v), cos(v), ceil(v), and floor(v). See 
-`VL/Ops.h` for the full list.
+`VL/Ops.hpp` for the full list.
 
 ### Matrix Functions
 
@@ -299,10 +299,9 @@ existing matrix or vector, use the SetSize method:
 All of the vector and matrix types in VL can be used in iostream-type
 expressions. For example:
 
-    #include <iostream.h>
     Vec3d v(vl_1);
-    cout << v << 2 * v << endl;
-    cin >> v;
+    std::cout << v << 2 * v << std::endl;
+    std::cin >> v;
 
 will output
 
@@ -337,7 +336,8 @@ will output
 
     Result: [1.100 1.100 1.100 1.100]
 
-See `VL/PrintBase.h` for the full list of formats, plus how to define your own. 
+See `VL/PrintBase.hpp` for the full list of formats, plus how to define your
+own. 
 
 **Note:** If only using the stdio-style API, you may wish to define
 VL_NO_IOSTREAM to avoid the compile time hit of the `<iostream>` include.
@@ -429,7 +429,7 @@ Finally, quaternions can be interchanged with 3x3 rotation matrices via:
     Quat MakeQuatFrom[CR]Rot(Mat3 rot3);  // Make quaternion from column/row-based rotation matrix.
     Mat3 [CR]RotFromQuat(Quat q);         // Return the equivalent column/row-based rotation matrix for q
 
-Further more specialised operations can be found in `VL/Quat.h`.
+Further more specialised operations can be found in `VL/Quat.hpp`.
 
 ## Sub Vectors and Matrices
 
@@ -558,7 +558,7 @@ The SVD has the following interesting properties:
 
 The factoring routines are defined as follows:
 
-    #include "VLFactor.h"
+    #include "VLFactor.hpp"
 
     void QRFactorization (RefMat A, RefMat Q, RefMat R);
     void SVDFactorization(RefMat A, RefMat U, RefMat V, RefVec diagonal);
@@ -573,11 +573,11 @@ rows, add enough zero rows to the bottom of it to make it square.
 
 You should include one of the following:
 
-    VL234f.h          Just Vec2/3/4f and Mat2/3/4f
-    VL234i.h          Vec2/3/4i and Mat2/3/4i
-    VLf.h             Float version: all of Vec[234]f and Mat[234]f
-    VLd.h             Double version: all of Vec[234]d and Mat[234]d
-    VLfd.h            Mixed version: matrices use doubles, vectors use floats.
+    VL234f.hpp   Just Vec2/3/4f and Mat2/3/4f and Quatf
+    VL234i.hpp   Vec2/3/4i and Mat2/3/4i
+    VLf.hpp      Float version: all of Vec[234]f and Mat[234]f
+    VLd.hpp      Double version: all of Vec[234]d and Mat[234]d
+    VLfd.hpp     Mixed version: matrices use doubles, vectors use floats.
 
 The last variant is useful in the situation where you want the lower storage of
 floats, but can't afford the loss of precision inherent in float-based matrix

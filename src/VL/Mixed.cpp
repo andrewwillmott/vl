@@ -1,12 +1,12 @@
 /*
     File:       Mixed.cpp
 
-    Function:   Implements Mixed.h
+    Function:   Implements Mixed.hpp
 
     Copyright:  Andrew Willmott
 */
 
-#include "VL/Mixed.h"
+#include "VL/Mixed.hpp"
 
 
 // --- Vector dot products ----------------------------------------------------

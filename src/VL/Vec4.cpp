@@ -1,13 +1,13 @@
 /*
     File:       Vec4.cpp
 
-    Function:   Implements Vec4.h
+    Function:   Implements Vec4.hpp
 
     Copyright:  Andrew Willmott
 */
 
 
-#include "VL/Vec4.h"
+#include "VL/Vec4.hpp"
 
 
 TVec4& TVec4::MakeUnit(int n, TElt k)

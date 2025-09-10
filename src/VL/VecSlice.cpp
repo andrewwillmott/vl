@@ -1,13 +1,13 @@
 /*
     File:       VecSlice.cpp
 
-    Function:   Implements VecSlice.h
+    Function:   Implements VecSlice.hpp
 
     Copyright:  Andrew Willmott
 */
 
-#include "VL/VecSlice.h"
-#include "VL/Vec.h"
+#include "VL/VecSlice.hpp"
+#include "VL/Vec.hpp"
 
 
 // --- SliceVec Constructors & Destructors ------------------------------------

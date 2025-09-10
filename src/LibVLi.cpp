@@ -1,7 +1,7 @@
 /*
     File:       LibVLi.cpp
 
-    Function:   Instantiates code necessary for VLi.h
+    Function:   Instantiates code necessary for VLi.hpp
 
     Copyright:  Andrew Willmott
 */
@@ -15,9 +15,9 @@
 #define VL_NO_REAL
 #define VL_PRINT_INT
 
-#include "VL/Begin.h"
+#include "VL/Begin.hpp"
 
-#include "VL/Constants.h"
+#include "VL/Constants.hpp"
 #include "VL/Vec2.cpp"
 #include "VL/Vec3.cpp"
 #include "VL/Vec4.cpp"
@@ -41,4 +41,4 @@
 #include "VL/Print.cpp"
 #include "VL/Stream.cpp"
 
-#include "VL/End.h"
+#include "VL/End.hpp"

@@ -6,64 +6,82 @@ VL234I_SUBS = -f vl234i.sed
 all: vl234f vlvec234f vl234i
 
 vlvec234f:
-	@echo "generating vlvec234f"
-	@echo "//\n// VLVec234f.h\n//\n// Copyright Andrew Willmott\n//\n\n" > VLVec234f.h
-	@echo "#include <cmath>"                      >> VLVec234f.h
-	@cat ../include/VL/Defs.h                     >> VLVec234f.h
-	@sed $(VL234F_SUBS) ../include/VL/Constants.h >> VLVec234f.h
-	@sed $(VL234F_SUBS) ../include/VL/Math.h      >> VLVec234f.h
-	@sed $(VL234F_SUBS) ../include/VL/Vec2.h      >> VLVec234f.h
-	@sed $(VL234F_SUBS) ../include/VL/Vec3.h      >> VLVec234f.h
-	@sed $(VL234F_SUBS) ../include/VL/Vec4.h      >> VLVec234f.h
+	@echo "Generating VLVec234f.*"
+	@echo "//\n// VLVec234f.hpp\n//\n// Copyright Andrew Willmott\n//\n" > VLVec234f.hpp
+	@echo "#ifndef VL234f_H\n#define VL234f_H\n"    >> VLVec234f.hpp
+	@echo "#include <cmath>"                        >> VLVec234f.hpp
+	@cat ../include/VL/Defs.hpp                     >> VLVec234f.hpp
+	@sed $(VL234F_SUBS) ../include/VL/Constants.hpp >> VLVec234f.hpp
+	@sed $(VL234F_SUBS) ../include/VL/Math.hpp      >> VLVec234f.hpp
+	@sed $(VL234F_SUBS) ../include/VL/Vec2.hpp      >> VLVec234f.hpp
+	@sed $(VL234F_SUBS) ../include/VL/Vec3.hpp      >> VLVec234f.hpp
+	@sed $(VL234F_SUBS) ../include/VL/Vec4.hpp      >> VLVec234f.hpp
+	@echo "\n#endif"                                >> VLVec234f.hpp
 
-	@echo '#include "VLVec234f.h"'         >  VLVec234f.cpp
-	@sed $(VL234F_SUBS) ../src/VL/Vec4.cpp >> VLVec234f.cpp
+	@echo '#include "VLVec234f.hpp"'                >  VLVec234f.cpp
+	@sed $(VL234F_SUBS) ../src/VL/Vec2.cpp        >> VLVec234f.cpp
+	@sed $(VL234F_SUBS) ../src/VL/Vec3.cpp        >> VLVec234f.cpp
+	@sed $(VL234F_SUBS) ../src/VL/Vec4.cpp        >> VLVec234f.cpp
 
 vl234f:
-	@echo "generating vl234f"
-	@echo "//\n// VL234f.h\n//\n// Copyright Andrew Willmott\n//\n\n" > VL234f.h
-	@echo "#include <cmath>"                      >> VL234f.h
-	@cat                ../include/VL/Defs.h      >> VL234f.h
-	@sed $(VL234F_SUBS) ../include/VL/Constants.h >> VL234f.h
-	@sed $(VL234F_SUBS) ../include/VL/Math.h      >> VL234f.h
-	@sed $(VL234F_SUBS) ../include/VL/Vec2.h      >> VL234f.h
-	@sed $(VL234F_SUBS) ../include/VL/Vec3.h      >> VL234f.h
-	@sed $(VL234F_SUBS) ../include/VL/Vec4.h      >> VL234f.h
-	@sed $(VL234F_SUBS) ../include/VL/Mat2.h      >> VL234f.h
-	@sed $(VL234F_SUBS) ../include/VL/Mat3.h      >> VL234f.h
-	@sed $(VL234F_SUBS) ../include/VL/Mat4.h      >> VL234f.h
-	@sed $(VL234F_SUBS) ../include/VL/Quat.h      >> VL234f.h
-	@sed $(VL234F_SUBS) ../include/VL/Transform.h >> VL234f.h
-	@echo "\n#include <iostream>"                 >> VL234f.h
-	@sed $(VL234F_SUBS) ../include/VL/Stream234.h >> VL234f.h
+	@echo "Generating VL234f.*"
+	@echo "//\n// VL234f.hpp\n//\n// Copyright Andrew Willmott\n//\n" > VL234f.hpp
+	@echo "#ifndef VL234f_H\n#define VL234f_H\n"    >> VL234f.hpp
+	@echo "#include <cmath>"                        >> VL234f.hpp
+	@cat                ../include/VL/Defs.hpp      >> VL234f.hpp
+	@sed $(VL234F_SUBS) ../include/VL/Constants.hpp >> VL234f.hpp
+	@sed $(VL234F_SUBS) ../include/VL/Math.hpp      >> VL234f.hpp
+	@sed $(VL234F_SUBS) ../include/VL/Vec2.hpp      >> VL234f.hpp
+	@sed $(VL234F_SUBS) ../include/VL/Vec3.hpp      >> VL234f.hpp
+	@sed $(VL234F_SUBS) ../include/VL/Vec4.hpp      >> VL234f.hpp
+	@sed $(VL234F_SUBS) ../include/VL/Mat2.hpp      >> VL234f.hpp
+	@sed $(VL234F_SUBS) ../include/VL/Mat3.hpp      >> VL234f.hpp
+	@sed $(VL234F_SUBS) ../include/VL/Mat4.hpp      >> VL234f.hpp
+	@sed $(VL234F_SUBS) ../include/VL/Quat.hpp      >> VL234f.hpp
+	@sed $(VL234F_SUBS) ../include/VL/Transform.hpp >> VL234f.hpp
+	@echo "\n#include <iostream>"                   >> VL234f.hpp
+	@sed $(VL234F_SUBS) ../include/VL/Stream234.hpp >> VL234f.hpp
+	@echo "\n#endif"                                >> VL234f.hpp
 
-	@echo "//\n// VL234f.cpp\n//\n// Copyright Andrew Willmott\n//\n\n" > VL234f.cpp
-	@echo '\n#include "VL234f.h"\n'             >> VL234f.cpp
-	@echo "#include <ctype.h>"                  >> VL234f.cpp
-	@echo "#include <iomanip>"                  >> VL234f.cpp
-	@echo "#include <vector>"                   >> VL234f.cpp
-	@sed $(VL234F_SUBS) ../src/VL/Vec4.cpp      >> VL234f.cpp
-	@sed $(VL234F_SUBS) ../src/VL/Mat2.cpp      >> VL234f.cpp
-	@sed $(VL234F_SUBS) ../src/VL/Mat3.cpp      >> VL234f.cpp
-	@sed $(VL234F_SUBS) ../src/VL/Mat4.cpp      >> VL234f.cpp
-	@sed $(VL234F_SUBS) ../src/VL/Quat.cpp      >> VL234f.cpp
-	@sed $(VL234F_SUBS) ../src/VL/Transform.cpp >> VL234f.cpp
-	@sed $(VL234F_SUBS) ../src/VL/Stream234.cpp >> VL234f.cpp
+	@echo "//\n// VL234f.cpp\n//\n// Copyright Andrew Willmott\n//\n" > VL234f.cpp
+	@echo '\n#include "VL234f.hpp"\n'               >> VL234f.cpp
+	@echo "#include <ctype.h>"                      >> VL234f.cpp
+	@echo "#include <iomanip>"                      >> VL234f.cpp
+	@echo "#include <vector>"                       >> VL234f.cpp
+	@sed $(VL234F_SUBS) ../src/VL/Vec2.cpp          >> VL234f.cpp
+	@sed $(VL234F_SUBS) ../src/VL/Vec3.cpp          >> VL234f.cpp
+	@sed $(VL234F_SUBS) ../src/VL/Vec4.cpp          >> VL234f.cpp
+	@sed $(VL234F_SUBS) ../src/VL/Mat2.cpp          >> VL234f.cpp
+	@sed $(VL234F_SUBS) ../src/VL/Mat3.cpp          >> VL234f.cpp
+	@sed $(VL234F_SUBS) ../src/VL/Mat4.cpp          >> VL234f.cpp
+	@sed $(VL234F_SUBS) ../src/VL/Quat.cpp          >> VL234f.cpp
+	@sed $(VL234F_SUBS) ../src/VL/Transform.cpp     >> VL234f.cpp
+	@sed $(VL234F_SUBS) ../src/VL/Stream234.cpp     >> VL234f.cpp
 
 vl234i:
-	@echo "generating vl234i"
-	@echo "//\n// VL234i.h\n//\n// Copyright Andrew Willmott\n//\n\n" > VL234i.h
-	@echo "#include <cmath>"                        >> VL234i.h
-	@cat                ../include/VL/Defs.h        >> VL234i.h
-	@sed $(VL234I_SUBS) ../include/VL/Constants.h   >> VL234i.h
-	@sed $(VL234I_SUBS) ../include/VL/Math.h        >> VL234i.h
-	@sed $(VL234I_SUBS) ../include/VL/Vec2.h        >> VL234i.h
-	@sed $(VL234I_SUBS) ../include/VL/Vec3.h        >> VL234i.h
-	@sed $(VL234I_SUBS) ../include/VL/Vec4.h        >> VL234i.h
+	@echo "Generating Vec234i.*"
+	@echo "//\n// VL234i.hpp\n//\n// Copyright Andrew Willmott\n//\n" > VL234i.hpp
+	@echo "#ifndef VL234i_H\n#define VL234i_H\n"    >> VL234i.hpp
+	@echo "#include <cmath>"                        >> VL234i.hpp
+	@cat                ../include/VL/Defs.hpp      >> VL234i.hpp
+	@sed $(VL234I_SUBS) ../include/VL/Constants.hpp >> VL234i.hpp
+	@sed $(VL234I_SUBS) ../include/VL/Math.hpp      >> VL234i.hpp
+	@sed $(VL234I_SUBS) ../include/VL/Vec2.hpp      >> VL234i.hpp
+	@sed $(VL234I_SUBS) ../include/VL/Vec3.hpp      >> VL234i.hpp
+	@sed $(VL234I_SUBS) ../include/VL/Vec4.hpp      >> VL234i.hpp
+#	@echo "\n#include <iostream>"                   >> VL234i.hpp
+#	@sed $(VL234I_SUBS) ../include/VL/Stream234.hpp >> VL234i.hpp
+	@echo "\n#endif"                                >> VL234i.hpp
 
 	@echo "//\n// VL234i.cpp\n//\n// Copyright Andrew Willmott\n//\n" > VL234i.cpp
-	@echo '\n#include "VL234i.h"'          >> VL234i.cpp
-	@sed $(VL234I_SUBS) ../src/VL/Vec4.cpp >> VL234i.cpp
+	@echo '\n#include "VL234i.hpp"'                 >> VL234i.cpp
+	@echo "#include <ctype.h>"                      >> VL234i.cpp
+	@echo "#include <iomanip>"                      >> VL234i.cpp
+	@echo "#include <vector>"                       >> VL234i.cpp
+	@sed $(VL234I_SUBS) ../src/VL/Vec2.cpp          >> VL234i.cpp
+	@sed $(VL234I_SUBS) ../src/VL/Vec3.cpp          >> VL234i.cpp
+	@sed $(VL234I_SUBS) ../src/VL/Vec4.cpp          >> VL234i.cpp
+#	@sed $(VL234I_SUBS) ../src/VL/Stream234.cpp     >> VL234i.cpp
 
 test:
 	$(CXX) $(CXXFLAGS) -I. -I../h VL234Test.cpp VL234f.cpp -o vl234test

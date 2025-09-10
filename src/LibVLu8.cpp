@@ -1,7 +1,7 @@
 /*
     File:       LibVLu8.cpp
 
-    Function:   Instantiates code necessary for VLu8.h
+    Function:   Instantiates code necessary for VLu8.hpp
 
     Copyright:  Andrew Willmott
 */
@@ -19,9 +19,9 @@
 
 inline uint8_t abs(uint8_t u) { return u; }  // avoid warnings
 
-#include "VL/Begin.h"
+#include "VL/Begin.hpp"
 
-#include "VL/Constants.h"
+#include "VL/Constants.hpp"
 #include "VL/Vec2.cpp"
 #include "VL/Vec3.cpp"
 #include "VL/Vec4.cpp"
@@ -45,4 +45,4 @@ inline uint8_t abs(uint8_t u) { return u; }  // avoid warnings
 #include "VL/Print.cpp"
 #include "VL/Stream.cpp"
 
-#include "VL/End.h"
+#include "VL/End.hpp"

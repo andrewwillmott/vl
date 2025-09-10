@@ -10,7 +10,7 @@ PREFIX ?= /usr/local
 LIB_DIR = $(PREFIX)/lib
 INCLUDE_DIR = $(PREFIX)/include
 
-VL_HEADERS = ../include/VL/* VLConfig.h
+VL_HEADERS = ../include/VL/* VLConfig.hpp
 VL_SOURCES = ../src/VL/* 
 
 libvl.a: LibVLf.o LibVLd.o LibVLfd.o LibVLi.o
@@ -19,8 +19,9 @@ libvl.a: LibVLf.o LibVLd.o LibVLfd.o LibVLi.o
 libvld.a: LibVLfD.o LibVLdD.o LibVLfdD.o LibVLiD.o
 	$(AR) rcs $@ $^
 
-VLConfig.h: ../include/VL/VLConfigBase.h
-	cp $^ VLConfig.h
+# Create a copy that can be modified with site-local options before install
+VLConfig.hpp: ../include/VLConfig.hpp
+	cp $^ VLConfig.hpp
 
 %.o: ../src/%.cpp $(VL_HEADERS) $(VL_SOURCES)
 	$(CXX) $(CXXFLAGS) $(OPTS) -I../include -I. -c $< -o $@
@@ -28,19 +29,19 @@ VLConfig.h: ../include/VL/VLConfigBase.h
 %D.o: ../src/%.cpp $(VL_HEADERS) $(VL_SOURCES)
 	$(CXX) $(CXXFLAGS) $(DBG_OPTS) -I../include -I. -c $< -o $@
 
-install: libvl.a libvld.a VLConfig.h
+install: libvl.a libvld.a VLConfig.hpp
 	mkdir -p $(LIB_DIR)
 	cp libvl.a libvld.a $(LIB_DIR)
 	mkdir -p $(INCLUDE_DIR)
-	cp ../include/VL234f.h  $(INCLUDE_DIR)	
-	cp ../include/VL234d.h  $(INCLUDE_DIR)	
-	cp ../include/VL234i.h  $(INCLUDE_DIR)	
-	cp ../include/VLf.h     $(INCLUDE_DIR)	
-	cp ../include/VLd.h     $(INCLUDE_DIR)	
-	cp ../include/VLfd.h    $(INCLUDE_DIR)	
-	cp ../include/VLi.h     $(INCLUDE_DIR)	
-	cp -r ../include/VL     $(INCLUDE_DIR)
-	cp VLConfig.h           $(INCLUDE_DIR)
+	cp ../include/VL234f.hpp  $(INCLUDE_DIR)	
+	cp ../include/VL234d.hpp  $(INCLUDE_DIR)	
+	cp ../include/VL234i.hpp  $(INCLUDE_DIR)	
+	cp ../include/VLf.hpp     $(INCLUDE_DIR)	
+	cp ../include/VLd.hpp     $(INCLUDE_DIR)	
+	cp ../include/VLfd.hpp    $(INCLUDE_DIR)	
+	cp ../include/VLi.hpp     $(INCLUDE_DIR)	
+	cp -r ../include/VL       $(INCLUDE_DIR)
+	cp VLConfig.hpp           $(INCLUDE_DIR)
 
 clean:
 	rm -f *.o

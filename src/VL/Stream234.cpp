@@ -8,7 +8,7 @@
 
 #ifndef VL_NO_IOSTREAM
 
-#include "VL/Stream234.h"
+#include "VL/Stream234.hpp"
 
 VL_NS_END
 #include <vector>

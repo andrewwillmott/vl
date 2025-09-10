@@ -1,15 +1,15 @@
 /*
     File:       MatSlice.cpp
 
-    Function:   Implements MatSlice.h
+    Function:   Implements MatSlice.hpp
 
     Copyright:  Andrew Willmott
 */
 
 
-#include "VL/MatSlice.h"
+#include "VL/MatSlice.hpp"
 
-#include "VL/Mat.h"
+#include "VL/Mat.hpp"
 
 
 // --- SliceMat Assignment Operators ------------------------------------------

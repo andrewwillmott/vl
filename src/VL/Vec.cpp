@@ -1,13 +1,13 @@
 /*
     File:       Vec.cpp
 
-    Function:   Implements Vec.h
+    Function:   Implements Vec.hpp
 
     Copyright:  Andrew Willmott
 */
 
 
-#include "VL/Vec.h"
+#include "VL/Vec.hpp"
 
 
 // --- RefVec Assignment Operators --------------------------------------------

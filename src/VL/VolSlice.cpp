@@ -1,15 +1,15 @@
 /*
     File:       VolSlice.cpp
 
-    Function:   Implements VolSlice.h
+    Function:   Implements VolSlice.hpp
 
     Copyright:  Andrew Willmott
 */
 
 
-#include "VL/VolSlice.h"
+#include "VL/VolSlice.hpp"
 
-#include "VL/Vol.h"
+#include "VL/Vol.hpp"
 
 
 // --- SliceVol Constructors & Destructors ------------------------------------

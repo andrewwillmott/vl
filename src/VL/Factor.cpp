@@ -6,7 +6,7 @@
     Copyright:  Andrew Willmott
 */
 
-#include "VL/Factor.h"
+#include "VL/Factor.hpp"
 
 // We must #ifndef all calls that don't mix TMat + TVec with VL_MIXED
 

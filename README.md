@@ -35,5 +35,5 @@ include directory, and then the src/LibVL*.cpp files for those types you're
 using, plus src/VL. This is the usual approach for MSVC projects on Windows, as
 there is not the same facility for system-installed development libraries there.
 
-The [extra](extra) directory contains single .h/.cpp pairs for cut-down variants
-of the library, for quick use in smaller projects.
+The [extra](extra) directory contains single .hpp/.cpp pairs for cut-down
+variants of the library, for quick use in smaller projects.

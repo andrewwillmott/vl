@@ -1,12 +1,12 @@
 /*
     File:       VL234Test.cpp
 
-    Function:   Regression tests for VL234f.h
+    Function:   Regression tests for VL234f.hpp
 
     Copyright:  Andrew Willmott
 */
 
-#include "VL234f.h"
+#include "VL234f.hpp"
 
 #include <iostream>
 

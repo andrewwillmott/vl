@@ -1,12 +1,12 @@
 /*
     File:       Mat.cpp
 
-    Function:   Implements Mat.h
+    Function:   Implements Mat.hpp
 
     Copyright:  Andrew Willmott
 */
 
-#include "VL/Mat.h"
+#include "VL/Mat.hpp"
 
 
 // --- RefMat Assignment Operators --------------------------------------------

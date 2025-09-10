@@ -1,12 +1,12 @@
 /*
     File:       Vol.cpp
 
-    Function:   Implements Vol.h
+    Function:   Implements Vol.hpp
 
     Copyright:  Andrew Willmott
 */
 
-#include "VL/Vol.h"
+#include "VL/Vol.hpp"
 
 
 // --- RefVol Assignment Operators --------------------------------------------

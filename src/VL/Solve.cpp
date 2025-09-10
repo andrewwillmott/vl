@@ -7,7 +7,7 @@
 */
 
 
-#include "VL/Solve.h"
+#include "VL/Solve.hpp"
 
 namespace
 {

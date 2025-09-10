@@ -8,7 +8,7 @@
 
 #ifndef VL_NO_STDIO
 
-#include "VL/Print.h"
+#include "VL/Print.hpp"
 
 int fprint(FILE* file, TConstRefVec v, int width, int precision)
 {

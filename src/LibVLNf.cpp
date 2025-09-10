@@ -1,7 +1,7 @@
 /*
     File:       LibVLNf.cpp
 
-    Purpose:    Compiles all code necessary for VLNf.h.
+    Purpose:    Compiles all code necessary for VLNf.hpp.
 
     Copyright:  Andrew Willmott
 */
@@ -10,7 +10,7 @@
 #define VL_V_ELT float
 #define VL_V_SUFF(X) X ## f
 
-#include "VL/Begin.h"
+#include "VL/Begin.hpp"
 
 #include "VL/Vec.cpp"
 #include "VL/VecSlice.cpp"
@@ -27,4 +27,4 @@
 #include "VL/Solve.cpp"
 #include "VL/Factor.cpp"
 
-#include "VL/End.h"
+#include "VL/End.hpp"

@@ -1,6 +1,7 @@
 *.o
 *.a
 test/vltest
-build/VLConfig.h
+extra/vl234test
+build/VLConfig.hpp
 out.txt
 .DS_Store

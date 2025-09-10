@@ -1,13 +1,13 @@
 /*
     File:       Quat.cpp
 
-    Function:   Implements Quat.h
+    Function:   Implements Quat.hpp
 
     Copyright:  Andrew Willmott
 */
 
 
-#include "VL/Quat.h"
+#include "VL/Quat.hpp"
 
 
 TQuat MakeQuat(const TVec3& v1, const TVec3& v2)

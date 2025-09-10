@@ -7,7 +7,7 @@
 */
 
 
-#include "VL/Transform.h"
+#include "VL/Transform.hpp"
 
 
 TMat2 CRot2(TElt theta)
