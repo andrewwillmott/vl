@@ -153,7 +153,7 @@ long as both operands are of the same type.
     Comparison:               ==, !=
 
 Vector multiplication and division is component-wise: `(a * b)[i] = a[i] * b[i]`.
-(See below for how to form the dot product of two vectors with dot().) 
+(See below for how to form the dot product of two vectors with dot().)
 
 Matrix multiplication is defined in the usual way. For component-wise matrix
 multiplication, see hprod below. For both matrices and vectors, multiplication
@@ -188,11 +188,11 @@ description of what they return.
     Vec3    proj(Vec4 v);                   // homogenous projection: v[0..2] / v[3]
 
 In the above, VecN is either a Vec or a Vec[234], and you should append 'f' or
-'d' as usual. For more on the use of the proj() operator, see 
+'d' as usual. For more on the use of the proj() operator, see
 [Transformations](#transformations).
 
 With the full version of the library, you can also use various standard math
-component-wise functions, such as sin(v), cos(v), ceil(v), and floor(v). See 
+component-wise functions, such as sin(v), cos(v), ceil(v), and floor(v). See
 `VL/Ops.hpp` for the full list.
 
 ### Matrix Functions
@@ -212,7 +212,7 @@ The following functions can be used with matrices.
 
 Here Mat is any matrix type, and Elt its corresponding element type, though
 the det() and adj() functions are only defined for Mat[234][fd]. For Mat[fd],
-inv() can optionally return the determinant, and the following additional 
+inv() can optionally return the determinant, and the following additional
 functions are supported:
 
     Elt   sumsqr   (Mat m);         // Sum of elements squared
@@ -316,31 +316,43 @@ For those who prefer the classic `stdio.h` fprintf-style APIs, and in particular
 their more explicit control over formatting, the following functions are
 available:
 
-    int fprint(FILE* file, Vec v);  // Print vector to 'file', e.g., stdout
-    int fprint(FILE* file, Mat m);  // Print matrix to 'file', e.g., stdout
+    int vl_fprint(FILE* file, Vec v);  // Print vector to 'file', e.g., stdout
+    int vl_fprint(FILE* file, Mat m);  // Print matrix to 'file', e.g., stdout
 
-    int fprint(FILE* file, const char* format, Vec v);     // Print according to format
-    int fprint(FILE* file, const char* format, Mat m);     // Print according to format
+    int vl_fprintf(FILE* file, const char* format, Vec v);    // Print according to format
+    int vl_fprintf(FILE* file, const char* format, Mat m);    // Print according to format
 
-    int fprint_as_c(FILE* file, const char* name, Vec v);  // Print as C code
-    int fprint_as_c(FILE* file, const char* name, Mat m);  // Print as C code
-  
+    int vl_fprint_as_c(FILE* file, const char* name, Vec v);  // Print as C code
+    int vl_fprint_as_c(FILE* file, const char* name, Mat m);  // Print as C code
+
+The corresponding vl_print[f]() calls that use `stdout` for `file` are also
+available.
+
 These calls all take the width and precision as additional arguments. The
 'format' argument is one of `VL_FMT_[VM][FI][_STYLE]`, e.g., VL_FMT_MF for a
 float-based matrix. You can also add a prefix and/or a suffix inline if desired,
 e.g.,
 
-    fprint(stdout, "Result: " VL_FMT_VF "\n", Vec4f(1.1f));
+    vl_printf("Result: " VL_FMT_VF "\n", Vec4f(1.1f));
 
 will output
 
     Result: [1.100 1.100 1.100 1.100]
 
 See `VL/PrintBase.hpp` for the full list of formats, plus how to define your
-own. 
+own.
+
+Similarly, there are a range of snprintf-style calls for writing to buffers
+rather than files. These include a set of 'ssprintf' adapters for STL-like
+string containers, e.g.,
+
+    std::string result;
+    vl_ssprint(result, v1);
+    vl_ssprint_append(result, " + " VL_FMT_VF "\n", v2);
 
 **Note:** If only using the stdio-style API, you may wish to define
-VL_NO_IOSTREAM to avoid the compile time hit of the `<iostream>` include.
+VL_NO_IOSTREAM to avoid the compile time hit of the `<iostream>` include. If
+you use neither API, define VL_NO_STDIO as well.
 
 ## Transformations
 
@@ -439,7 +451,7 @@ matrices:
     RefVec   sub    (Vec v, int start, int length);
     RefVec   first  (Vec v, int length);
     RefVec   last   (Vec v, int length);
-    
+
     SliceMat sub      (Mat m, int top, int left, int height, int width);
     SliceMat first    (Mat v, int rows, int cols);  // first (upper-left) rows/cols of matrix
     SliceMat last     (Mat v, int rows, int cols);  // last (lower-right) rows/cols of matrix
@@ -485,7 +497,7 @@ The slice approach also allows these additional useful operations:
 VL comes with a number of solvers, which are routines for finding the solution
 of the linear system of equations Ax = b. Currently these include
 `SolveOverRelax()`, which uses the overrelaxation form of Gauss-Seidel iteration,
-and `SolveConjGrad()`, which uses the conjugate gradient algorithm. 
+and `SolveConjGrad()`, which uses the conjugate gradient algorithm.
 
 The solvers are defined as follows:
 

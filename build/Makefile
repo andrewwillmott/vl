@@ -2,7 +2,7 @@
 # Makefile for VL library
 #
 
-CXXFLAGS ?= --std=c++11 
+CXXFLAGS ?= --std=c++11
 OPTS=-O3
 DBG_OPTS=-DVL_DEBUG -g
 
@@ -11,7 +11,9 @@ LIB_DIR = $(PREFIX)/lib
 INCLUDE_DIR = $(PREFIX)/include
 
 VL_HEADERS = ../include/VL/* VLConfig.hpp
-VL_SOURCES = ../src/VL/* 
+VL_SOURCES = ../src/VL/*
+
+all: libvl.a libvld.a
 
 libvl.a: LibVLf.o LibVLd.o LibVLfd.o LibVLi.o
 	$(AR) rcs $@ $^
@@ -33,13 +35,13 @@ install: libvl.a libvld.a VLConfig.hpp
 	mkdir -p $(LIB_DIR)
 	cp libvl.a libvld.a $(LIB_DIR)
 	mkdir -p $(INCLUDE_DIR)
-	cp ../include/VL234f.hpp  $(INCLUDE_DIR)	
-	cp ../include/VL234d.hpp  $(INCLUDE_DIR)	
-	cp ../include/VL234i.hpp  $(INCLUDE_DIR)	
-	cp ../include/VLf.hpp     $(INCLUDE_DIR)	
-	cp ../include/VLd.hpp     $(INCLUDE_DIR)	
-	cp ../include/VLfd.hpp    $(INCLUDE_DIR)	
-	cp ../include/VLi.hpp     $(INCLUDE_DIR)	
+	cp ../include/VL234f.hpp  $(INCLUDE_DIR)
+	cp ../include/VL234d.hpp  $(INCLUDE_DIR)
+	cp ../include/VL234i.hpp  $(INCLUDE_DIR)
+	cp ../include/VLf.hpp     $(INCLUDE_DIR)
+	cp ../include/VLd.hpp     $(INCLUDE_DIR)
+	cp ../include/VLfd.hpp    $(INCLUDE_DIR)
+	cp ../include/VLi.hpp     $(INCLUDE_DIR)
 	cp -r ../include/VL       $(INCLUDE_DIR)
 	cp VLConfig.hpp           $(INCLUDE_DIR)
 

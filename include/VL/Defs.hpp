@@ -43,3 +43,9 @@
     #define VL_NEW new
     #define VL_DELETE delete
 #endif
+
+// Misc
+
+#ifndef VL_CXX_11
+    #define VL_CXX_11 __cplusplus >= 201103L
+#endif
