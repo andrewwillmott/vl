@@ -1,7 +1,7 @@
 //
 // VL234i.cpp
 //
-// Copyright Andrew Willmott
+// Andrew Willmott
 //
 
 

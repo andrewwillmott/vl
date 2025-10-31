@@ -27,7 +27,7 @@
     See VLf.hpp, and VLfd.hpp for examples of how this facility is used.
 */
 
-#include "VLConfig.hpp"
+#include <VLConfig.hpp>  // angle brackets to work around MSVC looking up in parent directories.
 #include "Defs.hpp"
 
 #include <cmath>  // TODO: could use tgmath.hpp instead to work around MSVC

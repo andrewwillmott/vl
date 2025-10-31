@@ -1,7 +1,7 @@
 //
 // VL234f.cpp
 //
-// Copyright Andrew Willmott
+// Andrew Willmott
 //
 
 
@@ -946,10 +946,21 @@ Vec4f AxisAngleFromQuat(const Quatf& q)
     return aa;
 }
 
+#ifdef VL_DEBUG
+namespace
+{
+    inline bool IsNormalised(const Quatf& v, float eps = 1e-6f)
+    {
+        float s = sqrlen(v);
+        return s > 1.0f - eps && s < 1.0f + eps;
+    }
+}
+#endif
+
 Quatf SLerp(const Quatf& q1, const Quatf& q2, float s)
 {
-//    VL_ASSERT(IsNormalised(q1));
-//    VL_ASSERT(IsNormalised(q2));
+    VL_ASSERT(IsNormalised(q1));
+    VL_ASSERT(IsNormalised(q2));
     VL_ASSERT(s >= float(0) && s <= float(1));
 
     // Calculate angle between them.
@@ -966,7 +977,7 @@ Quatf SLerp(const Quatf& q1, const Quatf& q2, float s)
     if (sinHalfTheta < float(1e-3))
         return float(0.5) * (q1 + q2);
 
-    float halfTheta = std::cos(cosHalfTheta);
+    float halfTheta = std::acos(cosHalfTheta);
 
     float t = float(1) - s;
     float ratio1 = std::sin(t * halfTheta) / sinHalfTheta;

@@ -170,7 +170,7 @@ inline int vl_snprintf(char* str, size_t sz, const char* fmt, int s, int r, int 
 
 inline int sn_adv(char*& str, size_t& size, int chars)
 {
-    size_t write = (chars > size) ? size : chars;
+    size_t write = (size_t(chars) > size) ? size : chars;
     str += write;
     size -= write;
     return chars;
@@ -181,7 +181,7 @@ inline int sn_adv(char*& str, size_t& size, int chars)
 template<class... Args> inline int snprintf_adv(char*& str, size_t& size, const char* fmt, Args... args)
 {
     int chars = snprintf(str, size, fmt, args...);
-    size_t write = (chars > size) ? size : chars;
+    size_t write = (size_t(chars) > size) ? size : chars;
     str += write;
     size -= write;
     return chars;

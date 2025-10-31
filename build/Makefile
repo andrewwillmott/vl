@@ -3,7 +3,7 @@
 #
 
 CXXFLAGS ?= --std=c++11
-OPTS=-O3
+OPTS=-O3 -Wall
 DBG_OPTS=-DVL_DEBUG -g
 
 PREFIX ?= /usr/local

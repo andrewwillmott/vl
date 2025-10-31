@@ -16,21 +16,25 @@
 typedef TVec4 TQuat;
 
 // Quat construction
-TQuat MakeQuat(const TVec3& a, const TVec3& b);  // Returns a quaternion representing the rotation from a to b
+TQuat MakeQuat(const TVec3& a, const TVec3& b);  // Returns a quaternion representing the rotation from 'a' to 'b'
 TQuat MakeQuat(const TVec3& axis, TElt theta);   // Returns a quaternion rotation about 'axis' by 'theta'
 
-TQuat MakeQuatX(TElt theta);                      // Returns a rotation about the x axis by theta (in radians)
-TQuat MakeQuatY(TElt theta);                      // Returns a rotation about the y axis by theta (in radians)
-TQuat MakeQuatZ(TElt theta);                      // Returns a rotation about the z axis by theta (in radians)
+TQuat MakeQuatX(TElt theta);                     // Returns a rotation about the x axis by theta (in radians)
+TQuat MakeQuatY(TElt theta);                     // Returns a rotation about the y axis by theta (in radians)
+TQuat MakeQuatZ(TElt theta);                     // Returns a rotation about the z axis by theta (in radians)
 
-TQuat MakeQuat(const TVec3& point);               // Makes a quaternion from a point (e.g., for use in rotation)
-TQuat MakeQuat(TElt s);                           // Makes a quaternion from a scalar
+TQuat MakeQuat(const TVec3& v);                  // Makes a quaternion from a vector, e.g., for use in rotation. Prefer to use QuatApply however.
+TQuat MakeQuat(TElt s);                          // Makes a quaternion from a scalar -- this will scale another quat or position by 's' when applied/multiplied.
 
-TQuat MakeQuatFromCRot(const TMat3& rot3);        // Make quaternion from column-based rotation matrix.
-TQuat MakeQuatFromRRot(const TMat3& rot3);        // Make quaternion from row-based rotation matrix.
+TQuat MakeQuatFromCRot(const TMat3& rot3);       // Make quaternion from column-vector rotation matrix.
+TQuat MakeQuatFromRRot(const TMat3& rot3);       // Make quaternion from row-vector rotation matrix.
 
-TMat3 CRotFromQuat(const TQuat& q);               // Return the equivalent column-based rotation matrix for q
-TMat3 RRotFromQuat(const TQuat& q);               // Return the equivalent row-based rotation matrix for q
+TMat3 CRotFromQuat(const TQuat& q);              // Return the equivalent column-vector rotation matrix for q
+TMat3 RRotFromQuat(const TQuat& q);              // Return the equivalent row-vector rotation matrix for q
+
+TVec3 XFromQuat(const TQuat& q);                 // Return x axis rotated by q. (The x axis in the rotated frame.)
+TVec3 YFromQuat(const TQuat& q);                 // Return x axis rotated by q. (The x axis in the rotated frame.)
+TVec3 ZFromQuat(const TQuat& q);                 // Return x axis rotated by q. (The x axis in the rotated frame.)
 
 TVec4 AxisAngleFromQuat(const TQuat& q);          // Returns [axis, angle] representation of quaternion
 
@@ -86,6 +90,21 @@ inline TQuat MakeQuat(const TVec3& point)
 inline TQuat MakeQuat(TElt s)
 {
     return TQuat(TElt(0), TElt(0), TElt(0), s);
+}
+
+inline TVec3 XFromQuat(const TQuat& q)
+{
+    return TVec3(1 - 2 * (q.y * q.y + q.z * q.z), 2 * (q.x * q.y + q.w * q.z), 2 * (q.x * q.z - q.w * q.y));
+}
+
+inline TVec3 YFromQuat(const TQuat& q)
+{
+    return TVec3(2 * (q.x * q.y - q.w * q.z), 1 - 2 * (q.x * q.x + q.z * q.z), 2 * (q.y * q.z + q.w * q.x));
+}
+
+inline TVec3 ZFromQuat(const TQuat& q)
+{
+    return TVec3(2 * (q.x * q.z + q.w * q.y), 2 * (q.y * q.z - q.w * q.x), 1 - 2 * (q.x * q.x + q.y * q.y));
 }
 
 inline TVec3 QuatApply(const TQuat& q, const TVec3& p)

@@ -1,7 +1,7 @@
 //
 // VLVec234f.hpp
 //
-// Copyright Andrew Willmott
+// Andrew Willmott
 //
 
 #ifndef VL234f_H

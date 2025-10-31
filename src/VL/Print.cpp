@@ -10,6 +10,22 @@
 
 #include "VL/Print.hpp"
 
+#ifdef VL_PRINT_INT
+int vl_fprint(FILE* file, TConstRefVec v, int width, int precision)
+{
+    return vl_fprintf(file, VL_FMT_VI "\n", v, width, precision);
+}
+
+int vl_fprint(FILE* file, TConstRefMat m, int width, int precision)
+{
+    return vl_fprintf(file, VL_FMT_MI, m, width, precision);
+}
+
+int vl_fprint(FILE* file, TConstRefVol l, int width, int precision)
+{
+    return vl_fprintf(file, VL_FMT_LI, l, width, precision);
+}
+#else
 int vl_fprint(FILE* file, TConstRefVec v, int width, int precision)
 {
     return vl_fprintf(file, VL_FMT_VF "\n", v, width, precision);
@@ -24,6 +40,7 @@ int vl_fprint(FILE* file, TConstRefVol l, int width, int precision)
 {
     return vl_fprintf(file, VL_FMT_LF, l, width, precision);
 }
+#endif
 
 int vl_fprintf(FILE* file, const char* format, TConstRefVec v, int width, int precision)
 {

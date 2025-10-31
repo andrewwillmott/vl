@@ -1,7 +1,7 @@
 //
 // VL234f.hpp
 //
-// Copyright Andrew Willmott
+// Andrew Willmott
 //
 
 #ifndef VL234f_H
@@ -2641,21 +2641,25 @@ inline Vec4f col(const Mat4f& m, int j)
 typedef Vec4f Quatf;
 
 // Quat construction
-Quatf MakeQuat(const Vec3f& a, const Vec3f& b);  // Returns a quaternion representing the rotation from a to b
+Quatf MakeQuat(const Vec3f& a, const Vec3f& b);  // Returns a quaternion representing the rotation from 'a' to 'b'
 Quatf MakeQuat(const Vec3f& axis, float theta);   // Returns a quaternion rotation about 'axis' by 'theta'
 
-Quatf MakeQuatX(float theta);                      // Returns a rotation about the x axis by theta (in radians)
-Quatf MakeQuatY(float theta);                      // Returns a rotation about the y axis by theta (in radians)
-Quatf MakeQuatZ(float theta);                      // Returns a rotation about the z axis by theta (in radians)
+Quatf MakeQuatX(float theta);                     // Returns a rotation about the x axis by theta (in radians)
+Quatf MakeQuatY(float theta);                     // Returns a rotation about the y axis by theta (in radians)
+Quatf MakeQuatZ(float theta);                     // Returns a rotation about the z axis by theta (in radians)
 
-Quatf MakeQuat(const Vec3f& point);               // Makes a quaternion from a point (e.g., for use in rotation)
-Quatf MakeQuat(float s);                           // Makes a quaternion from a scalar
+Quatf MakeQuat(const Vec3f& v);                  // Makes a quaternion from a vector, e.g., for use in rotation. Prefer to use QuatApply however.
+Quatf MakeQuat(float s);                          // Makes a quaternion from a scalar -- this will scale another quat or position by 's' when applied/multiplied.
 
-Quatf MakeQuatFromCRot(const Mat3f& rot3);        // Make quaternion from column-based rotation matrix.
-Quatf MakeQuatFromRRot(const Mat3f& rot3);        // Make quaternion from row-based rotation matrix.
+Quatf MakeQuatFromCRot(const Mat3f& rot3);       // Make quaternion from column-vector rotation matrix.
+Quatf MakeQuatFromRRot(const Mat3f& rot3);       // Make quaternion from row-vector rotation matrix.
 
-Mat3f CRotFromQuat(const Quatf& q);               // Return the equivalent column-based rotation matrix for q
-Mat3f RRotFromQuat(const Quatf& q);               // Return the equivalent row-based rotation matrix for q
+Mat3f CRotFromQuat(const Quatf& q);              // Return the equivalent column-vector rotation matrix for q
+Mat3f RRotFromQuat(const Quatf& q);              // Return the equivalent row-vector rotation matrix for q
+
+Vec3f XFromQuat(const Quatf& q);                 // Return x axis rotated by q. (The x axis in the rotated frame.)
+Vec3f YFromQuat(const Quatf& q);                 // Return x axis rotated by q. (The x axis in the rotated frame.)
+Vec3f ZFromQuat(const Quatf& q);                 // Return x axis rotated by q. (The x axis in the rotated frame.)
 
 Vec4f AxisAngleFromQuat(const Quatf& q);          // Returns [axis, angle] representation of quaternion
 
@@ -2711,6 +2715,21 @@ inline Quatf MakeQuat(const Vec3f& point)
 inline Quatf MakeQuat(float s)
 {
     return Quatf(float(0), float(0), float(0), s);
+}
+
+inline Vec3f XFromQuat(const Quatf& q)
+{
+    return Vec3f(1 - 2 * (q.y * q.y + q.z * q.z), 2 * (q.x * q.y + q.w * q.z), 2 * (q.x * q.z - q.w * q.y));
+}
+
+inline Vec3f YFromQuat(const Quatf& q)
+{
+    return Vec3f(2 * (q.x * q.y - q.w * q.z), 1 - 2 * (q.x * q.x + q.z * q.z), 2 * (q.y * q.z + q.w * q.x));
+}
+
+inline Vec3f ZFromQuat(const Quatf& q)
+{
+    return Vec3f(2 * (q.x * q.z + q.w * q.y), 2 * (q.y * q.z - q.w * q.x), 1 - 2 * (q.x * q.x + q.y * q.y));
 }
 
 inline Vec3f QuatApply(const Quatf& q, const Vec3f& p)

@@ -251,10 +251,21 @@ TVec4 AxisAngleFromQuat(const TQuat& q)
     return aa;
 }
 
+#ifdef VL_DEBUG
+namespace
+{
+    inline bool IsNormalised(const TQuat& v, TElt eps = TElt(1e-6))
+    {
+        TElt s = sqrlen(v);
+        return s > (1 - eps) && s < (1 + eps);
+    }
+}
+#endif
+
 TQuat SLerp(const TQuat& q1, const TQuat& q2, TElt s)
 {
-//    VL_ASSERT(IsNormalised(q1));
-//    VL_ASSERT(IsNormalised(q2));
+    VL_ASSERT(IsNormalised(q1));
+    VL_ASSERT(IsNormalised(q2));
     VL_ASSERT(s >= TElt(0) && s <= TElt(1));
 
     // Calculate angle between them.
@@ -271,7 +282,7 @@ TQuat SLerp(const TQuat& q1, const TQuat& q2, TElt s)
     if (sinHalfTheta < TElt(1e-3))
         return TElt(0.5) * (q1 + q2);
 
-    TElt halfTheta = std::cos(cosHalfTheta);
+    TElt halfTheta = std::acos(cosHalfTheta);
 
     TElt t = TElt(1) - s;
     TElt ratio1 = std::sin(t * halfTheta) / sinHalfTheta;

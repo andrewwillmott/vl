@@ -7,7 +7,7 @@ all: vl234f vlvec234f vl234i
 
 vlvec234f:
 	@echo "Generating VLVec234f.*"
-	@echo "//\n// VLVec234f.hpp\n//\n// Copyright Andrew Willmott\n//\n" > VLVec234f.hpp
+	@echo "//\n// VLVec234f.hpp\n//\n// Andrew Willmott\n//\n" > VLVec234f.hpp
 	@echo "#ifndef VL234f_H\n#define VL234f_H\n"    >> VLVec234f.hpp
 	@echo "#include <cmath>"                        >> VLVec234f.hpp
 	@cat ../include/VL/Defs.hpp                     >> VLVec234f.hpp
@@ -25,7 +25,7 @@ vlvec234f:
 
 vl234f:
 	@echo "Generating VL234f.*"
-	@echo "//\n// VL234f.hpp\n//\n// Copyright Andrew Willmott\n//\n" > VL234f.hpp
+	@echo "//\n// VL234f.hpp\n//\n// Andrew Willmott\n//\n" > VL234f.hpp
 	@echo "#ifndef VL234f_H\n#define VL234f_H\n"    >> VL234f.hpp
 	@echo "#include <cmath>"                        >> VL234f.hpp
 	@cat                ../include/VL/Defs.hpp      >> VL234f.hpp
@@ -43,7 +43,7 @@ vl234f:
 	@sed $(VL234F_SUBS) ../include/VL/Stream234.hpp >> VL234f.hpp
 	@echo "\n#endif"                                >> VL234f.hpp
 
-	@echo "//\n// VL234f.cpp\n//\n// Copyright Andrew Willmott\n//\n" > VL234f.cpp
+	@echo "//\n// VL234f.cpp\n//\n// Andrew Willmott\n//\n" > VL234f.cpp
 	@echo '\n#include "VL234f.hpp"\n'               >> VL234f.cpp
 	@echo "#include <ctype.h>"                      >> VL234f.cpp
 	@echo "#include <iomanip>"                      >> VL234f.cpp
@@ -60,7 +60,7 @@ vl234f:
 
 vl234i:
 	@echo "Generating Vec234i.*"
-	@echo "//\n// VL234i.hpp\n//\n// Copyright Andrew Willmott\n//\n" > VL234i.hpp
+	@echo "//\n// VL234i.hpp\n//\n// Andrew Willmott\n//\n" > VL234i.hpp
 	@echo "#ifndef VL234i_H\n#define VL234i_H\n"    >> VL234i.hpp
 	@echo "#include <cmath>"                        >> VL234i.hpp
 	@cat                ../include/VL/Defs.hpp      >> VL234i.hpp
@@ -73,7 +73,7 @@ vl234i:
 #	@sed $(VL234I_SUBS) ../include/VL/Stream234.hpp >> VL234i.hpp
 	@echo "\n#endif"                                >> VL234i.hpp
 
-	@echo "//\n// VL234i.cpp\n//\n// Copyright Andrew Willmott\n//\n" > VL234i.cpp
+	@echo "//\n// VL234i.cpp\n//\n// Andrew Willmott\n//\n" > VL234i.cpp
 	@echo '\n#include "VL234i.hpp"'                 >> VL234i.cpp
 	@echo "#include <ctype.h>"                      >> VL234i.cpp
 	@echo "#include <iomanip>"                      >> VL234i.cpp
