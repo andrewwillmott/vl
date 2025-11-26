@@ -25,9 +25,9 @@
         inline OUT acos (const IN& v) { return transformed(v, std::acos ); } \
         inline OUT atan (const IN& v) { return transformed(v, std::atan ); } \
         \
-        inline OUT::Elt vl_min(const IN& v) { return reduced(v, vl_min); } \
-        inline OUT::Elt vl_max(const IN& v) { return reduced(v, vl_max); } \
-        
+        inline OUT::Elt vl_min(const IN& v) { return (OUT::Elt) reduced(v, vl_min); } \
+        inline OUT::Elt vl_max(const IN& v) { return (OUT::Elt) reduced(v, vl_max); } \
+
 #else
     #define VL_OPS(IN, OUT)
 #endif

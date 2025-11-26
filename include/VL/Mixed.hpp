@@ -125,22 +125,22 @@ inline TVec3& operator *= (TVec3& v, const TMat3& m)
     inline TVec2 xform(const TMat2& m, const TVec2& v)
     { return v * m; }
     inline TVec2 xform(const TMat3& m, const TVec2& v)
-    { return proj(TVec3(v, 1.0) * m); }
+    { return proj(TVec3(v, TElt(1)) * m); }
     inline TVec3 xform(const TMat3& m, const TVec3& v)
     { return v * m; }
     inline TVec3 xform(const TMat4& m, const TVec3& v)
-    { return proj(TVec4(v, 1.0) * m); }
+    { return proj(TVec4(v, TElt(1)) * m); }
     inline TVec4 xform(const TMat4& m, const TVec4& v)
     { return v * m; }
 #else
     inline TVec2 xform(const TMat2& m, const TVec2& v)
     { return m * v; }
     inline TVec2 xform(const TMat3& m, const TVec2& v)
-    { return proj(m * TVec3(v, 1.0)); }
+    { return proj(m * TVec3(v, TElt(1))); }
     inline TVec3 xform(const TMat3& m, const TVec3& v)
     { return m * v; }
     inline TVec3 xform(const TMat4& m, const TVec3& v)
-    { return proj(m * TVec4(v, 1.0)); }
+    { return proj(m * TVec4(v, TElt(1))); }
     inline TVec4 xform(const TMat4& m, const TVec4& v)
     { return m * v; }
 #endif

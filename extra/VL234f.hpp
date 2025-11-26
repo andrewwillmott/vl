@@ -88,6 +88,9 @@ const double vl_twoPi        = vl_pi * 2.0;
 
 const double vl_huge = vld_huge;
 
+const float  vlf_eps = 1.19209290E-07F;
+const double vld_eps = 2.2204460492503131e-016;
+
 struct VLVecType { typedef void IsVec; typedef float Elt; };
 struct VLMatType { typedef void IsMat; typedef float Elt; };
 struct VLVolType { typedef void IsVol; typedef float Elt; };
@@ -110,16 +113,16 @@ const float VL_CS(twoPi)     = float(VL_CS(pi) * 2);
 
 
 
-using ::abs;
-using ::sqrt;
+using std::abs;
+using std::sqrt;
 
 // --- Inlines ----------------------------------------------------------------
 
 // additions to arithmetic functions
 
-inline float  len   (float  x) { return std::abs(x); }
-inline double len   (double x) { return std::abs(x); }
-inline int    len   (int    x) { return std::abs(x); }
+inline float  len   (float  x) { return abs(x); }
+inline double len   (double x) { return abs(x); }
+inline int    len   (int    x) { return abs(x); }
 
 inline float  sqrlen(float  x) { return x * x; }
 inline double sqrlen(double x) { return x * x; }
@@ -2644,6 +2647,8 @@ typedef Vec4f Quatf;
 Quatf MakeQuat(const Vec3f& a, const Vec3f& b);  // Returns a quaternion representing the rotation from 'a' to 'b'
 Quatf MakeQuat(const Vec3f& axis, float theta);   // Returns a quaternion rotation about 'axis' by 'theta'
 
+Quatf MakeQuat(const Quatf& a, const Quatf& b);  // Returns relative rotation from 'a' to 'b'
+
 Quatf MakeQuatX(float theta);                     // Returns a rotation about the x axis by theta (in radians)
 Quatf MakeQuatY(float theta);                     // Returns a rotation about the y axis by theta (in radians)
 Quatf MakeQuatZ(float theta);                     // Returns a rotation about the z axis by theta (in radians)
@@ -2658,33 +2663,64 @@ Mat3f CRotFromQuat(const Quatf& q);              // Return the equivalent column
 Mat3f RRotFromQuat(const Quatf& q);              // Return the equivalent row-vector rotation matrix for q
 
 Vec3f XFromQuat(const Quatf& q);                 // Return x axis rotated by q. (The x axis in the rotated frame.)
-Vec3f YFromQuat(const Quatf& q);                 // Return x axis rotated by q. (The x axis in the rotated frame.)
-Vec3f ZFromQuat(const Quatf& q);                 // Return x axis rotated by q. (The x axis in the rotated frame.)
+Vec3f YFromQuat(const Quatf& q);                 // Return y axis rotated by q. (The y axis in the rotated frame.)
+Vec3f ZFromQuat(const Quatf& q);                 // Return z axis rotated by q. (The z axis in the rotated frame.)
 
-Vec4f AxisAngleFromQuat(const Quatf& q);          // Returns [axis, angle] representation of quaternion
+Vec4f AxisAngleFromQuat(const Quatf& q);         // Returns [axis, angle] representation of quaternion
 
 // Quat ops
-Vec3f QuatApply(const Quatf& q, const Vec3f& p);  // Transform point p by quaternion q
-Quatf QuatMult (const Quatf& a, const Quatf& b);  // Concatenate quaternions, the result represents applying qb then qa.
-Quatf QuatConj (const Quatf& q);                  // Quaternion conjugate. if len(q) = 1, this is also the inverse.
-Quatf QuatInv  (const Quatf& q);                  // Quaternion inverse.
+Vec3f QuatApply(const Vec3f& p, const Quatf& q); // Transform point p by applying quaternion q
+Quatf QuatMult (const Quatf& a, const Quatf& b); // Concatenate quaternions: the result represents applying 'a' then 'b'.
+Quatf QuatConj (const Quatf& q);                 // Quaternion conjugate. if len(q) = 1, this is also the inverse.
+Quatf QuatInv  (const Quatf& q);                 // Quaternion inverse.
 
-Quatf NLerp(const Quatf& q1, const Quatf& q2, float s);   // Return linear + renormalise interpolation between q1 and q2. Fast, accurate for smaller angles
-Quatf SLerp(const Quatf& q1, const Quatf& q2, float s);   // Return spherical interpolation between q1 and q2
+Quatf NLerp(const Quatf& q1, const Quatf& q2, float s); // Return linear + renormalize interpolation between q1 and q2. Fast, accurate for smaller angles
+Quatf SLerp(const Quatf& q1, const Quatf& q2, float s); // Return spherical interpolation between q1 and q2
 
-Quatf FastRenormalize(const Quatf& q);                    // Renormalizes a mostly-already-normalized quaternion.
-void  ConstrainNeighbourhood(const Quatf& q1, Quatf* q2); // Adjust q2 so lerp between q1 & q2 takes shortest path.
+Quatf FastRenormalize(const Quatf& q);                 // Renormalizes a mostly-already-normalized quaternion.
+Quatf QuatConstrain(const Quatf& q1, const Quatf& q2); // Return q2 adjusted so lerp between q1 & q2 takes shortest path.
 
-float CosAngleBetween(Quatf q0, Quatf q1);          // Returns cosine of the angle between q0 . a vs q1 . a
+float  CosAngle(const Quatf& a, const Quatf& b);     // Returns cosine of the angle of the rotation from 'a' to 'b', e.g., that between (a x p) and (b x p)
+float  Angle   (const Quatf& a, const Quatf& b);     // Returns the angle of the rotation from 'a' to 'b', e.g., that between (a x p) and (b x p)
 
-void DecomposeTwist(const Quatf& q, const Vec3f& axis, Quatf* twist, Quatf* noTwist);
-// Decomposes q into a 'twist' rotation around 'axis', and a residual 'noTwist' rotation.
+float  CosArcLength(const Quatf& a, const Quatf& b); // Returns cos of "geodesic distance" -- length of shortest arc between a and b in S3 (on the 4D sphere). This is half the angle of rotation due to the double-cover property of quaternions.
+float  ArcLength   (const Quatf& a, const Quatf& b); // Returns "geodesic distance" -- length of shortest arc/angle between a and b in S3 (on the 4D sphere).
 
-Quatf ClosestAxialRotTo(VLAxis a, const Quatf& q); // Find closest rotation around axis 'a' to q
-Quatf ClosestRotXYTo(const Quatf& q);              // Find closest rotation around x and y to q.
+void  DecomposeTwist(const Quatf& q, const Vec3f& axis, Quatf* noTwist, Quatf* twist); // Decomposes q into a 'noTwist' rotation around 'axis', and a residual 'twist' rotation.
+
+Quatf ClosestAxialRotTo(VLAxis a, const Quatf& q);  // Find closest rotation around axis 'a' to q
+Quatf ClosestRotXYTo(const Quatf& q);               // Find closest rotation around x and y to q.
+
+Quatf QuatPower(const Quatf& q, float t); // Returns q^t
+Quatf QuatSqrt(Quatf q);                 // Returns q^1/2, faster than QuatPower/Log/etc.
+
+Quatf Log(const Quatf& q);       // Quaternion log: analogue of [sin(theta), cos(theta)] -> theta. For unit quaternions, result.w = 0
+Quatf Exp(const Quatf& q);       // Quaternion exponentiation: analogue of theta -> [sin(theta), cos(theta)]
+
+Quatf LogUnit(const Quatf& q);   // Faster log for unit quaternion input
+Quatf ExpUnit(const Quatf& q);   // Faster exp for unit quaternion input
+
+Vec3f LogUnit3(const Quatf& q);  // LogUnit variant that omits the last (zero) component
+Quatf ExpUnit3(const Vec3f& lq); // ExpUnit variant that omits the last (zero) component
+
+Vec3f QuatDiff3(const Quatf& a, const Quatf& b); // Returns LogUnit3(MakeQuat(a, b)) -- useful for rotational velocity, and other log/tangent-space deltas
+
+Quatf SLerp(Quatf q, Vec3f wd, float t);  // SLerp that takes wd=QuatDiff3(q, qb)). Avoids acos, allows multiple rotations by scaling wd
+Quatf SLerp(Quatf q, Vec3f n, float w, float t);  // Alternate version with separate (normalised) axis and angle
 
 
 // --- Inlines ----------------------------------------------------------------
+
+#ifdef VL_DEBUG
+namespace
+{
+    inline bool vl_is_unit(const Quatf& v, float eps = float(1e-3))
+    {
+        float s = 1 - sqrlen(v);
+        return s > -eps && s < eps;
+    }
+}
+#endif
 
 inline Quatf MakeQuatX(float theta)
 {
@@ -2717,6 +2753,17 @@ inline Quatf MakeQuat(float s)
     return Quatf(float(0), float(0), float(0), s);
 }
 
+inline Quatf MakeQuat(const Quatf& a, const Quatf& b)
+{
+    // return QuatMult(QuatInv(a), b);
+    Quatf result;
+    result.x = + a.w * b.x - a.z * b.y + a.y * b.z - a.x * b.w;
+    result.y = + a.z * b.x + a.w * b.y - a.x * b.z - a.y * b.w;
+    result.z = - a.y * b.x + a.x * b.y + a.w * b.z - a.z * b.w;
+    result.w = + a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
+    return result / sqrlen(a);  // worth having a MakeQuatUnit?
+}
+
 inline Vec3f XFromQuat(const Quatf& q)
 {
     return Vec3f(1 - 2 * (q.y * q.y + q.z * q.z), 2 * (q.x * q.y + q.w * q.z), 2 * (q.x * q.z - q.w * q.y));
@@ -2732,7 +2779,7 @@ inline Vec3f ZFromQuat(const Quatf& q)
     return Vec3f(2 * (q.x * q.z + q.w * q.y), 2 * (q.y * q.z - q.w * q.x), 1 - 2 * (q.x * q.x + q.y * q.y));
 }
 
-inline Vec3f QuatApply(const Quatf& q, const Vec3f& p)
+inline Vec3f QuatApply(const Vec3f& p, const Quatf& q)
 {
     // total = 18*, 12+
     Vec3f b0 = cross(q.AsVec3(), p);
@@ -2740,9 +2787,21 @@ inline Vec3f QuatApply(const Quatf& q, const Vec3f& p)
     return p + 2 * (b0 * q.w + b1);
 }
 
+inline Quatf QuatMult(const Quatf& a, const Quatf& b)
+{
+    // total = 16*, 12+
+    Quatf result;
+    result.x = + a.w * b.x + a.z * b.y - a.y * b.z + a.x * b.w;
+    result.y = - a.z * b.x + a.w * b.y + a.x * b.z + a.y * b.w;
+    result.z = + a.y * b.x - a.x * b.y + a.w * b.z + a.z * b.w;
+    result.w = - a.x * b.x - a.y * b.y - a.z * b.z + a.w * b.w;
+
+    return result;
+}
+
 inline Quatf QuatConj(const Quatf& q)
 {
-    return Quatf(-q[0], -q[1], -q[2], q[3]);
+    return Quatf(-q.x, -q.y, -q.z, q.w);
 }
 
 inline Quatf QuatInv(const Quatf& q)
@@ -2755,10 +2814,9 @@ inline Quatf NLerp(const Quatf& q1, const Quatf& q2, float s)
     return FastRenormalize(lerp(q1, q2, s));
 }
 
-inline void ConstrainNeighbourhood(const Quatf& q1, Quatf* q2)
+inline Quatf QuatConstrain(const Quatf& q1, const Quatf& q2)
 {
-    if (dot(q1, *q2) < 0)
-        *q2 = -*q2;
+    return dot(q1, q2) < 0 ? -q2 : q2;
 }
 
 inline Quatf FastRenormalize(const Quatf& q)
@@ -2767,9 +2825,92 @@ inline Quatf FastRenormalize(const Quatf& q)
     return q * approxOneOverLen;
 }
 
-inline float CosAngleBetween(Quatf q0, Quatf q1)
+inline float CosAngle(const Quatf& a, const Quatf& b)
 {
-    return dot(q0, q1);
+    VL_ASSERT(vl_is_unit(a));
+    VL_ASSERT(vl_is_unit(b));
+    return 2 * sqr(dot(a, b)) - 1;
+}
+
+inline float Angle(const Quatf& a, const Quatf& b)
+{
+    VL_ASSERT(vl_is_unit(a));
+    VL_ASSERT(vl_is_unit(b));
+    return 2 * std::acos(vl_clamp<float>(dot(a, b), -1, 1));  // Equivalent to LogUnit(QuatMult(inv(a), b)) = LogUnit(MakeQuat(a, b)), namely angle of the rotation from a to b.
+}
+
+inline float CosArcLength(const Quatf& a, const Quatf& b)
+{
+    VL_ASSERT(vl_is_unit(a));
+    VL_ASSERT(vl_is_unit(b));
+    return dot(a, b);
+}
+
+inline float ArcLength(const Quatf& a, const Quatf& b)
+{
+    VL_ASSERT(vl_is_unit(a));
+    VL_ASSERT(vl_is_unit(b));
+    return std::acos(vl_clamp<float>(dot(a, b), -1, 1));  // Equivalent to LogUnit(QuatMult(inv(a), b)) = LogUnit(MakeQuat(a, b)), namely angle of the rotation from a to b.
+}
+
+inline Quatf QuatPower(const Quatf& q, float t)
+{
+    Vec3f lq = LogUnit3(q);
+
+    float theta = len(lq);
+    float ttheta = t * theta;
+
+    return Quatf(lq * (std::sin(ttheta) / (theta + float(1e-8))), std::cos(ttheta));
+}
+
+inline Quatf QuatSqrt(Quatf q)
+{
+    q.w += 1;
+    return norm_safe(q);  // https://maxime-tournier.github.io/notes/quaternions.html#fast-square-root
+}
+
+inline Quatf Log(const Quatf& q)
+{
+    float qLen = len(q);
+    float s = len(q.AsVec3());
+    float c = q.w;
+    return Quatf((std::atan2(s, c) / (s + float(1e-8))) * q.AsVec3(), std::log(qLen));
+}
+
+inline Quatf Exp(const Quatf& q)
+{
+    float theta = len(q.AsVec3());
+    return std::exp(q.w) * Quatf(q.AsVec3() * (std::sin(theta) / (theta + vlf_eps)), std::cos(theta));
+}
+
+inline Quatf LogUnit(const Quatf& q)
+{
+    VL_ASSERT(vl_is_unit(q));
+    float s = len(q.AsVec3());
+    float c = q.w;
+    return Quatf((std::atan2(s, c) / (s + float(1e-8))) * q.AsVec3(), 0);
+}
+
+inline Quatf ExpUnit(const Quatf& q)
+{
+    VL_ASSERT(abs(q.w) < float(1e-8));
+
+    float theta = len(q.AsVec3());
+    return Quatf(q.AsVec3() * (std::sin(theta) / (theta + float(1e-8))), std::cos(theta));
+}
+
+inline Vec3f LogUnit3(const Quatf& q)
+{
+    VL_ASSERT(vl_is_unit(q));
+    float s = len(q.AsVec3());
+    float c = q.w;
+    return (std::atan2(s, c) / (s + float(1e-8))) * q.AsVec3();
+}
+
+inline Quatf ExpUnit3(const Vec3f& lq)
+{
+    float theta = len(lq);
+    return Quatf(lq * (std::sin(theta) / (theta + float(1e-8))), std::cos(theta));
 }
 
 #endif
@@ -2810,6 +2951,16 @@ Mat4f HRRot4f  (const Vec3f& from, const Vec3f& to);  // RRot3f as 4x4 homogeneo
 Mat4f HCTrans4f(const Vec3f& t);     // Given 3d translation as 4x4 homogeneous matrix on col vectors
 Mat4f HRTrans4f(const Vec3f& t);     // Given 3d translation as 4x4 homogeneous matrix on row vectors
 
+Vec2f HApply(Vec2f v, const Mat3f& m);  // Apply given affine row-vector transform 'm' to 'v'
+Vec3f HApply(Vec3f v, const Mat4f& m);  // Apply given affine row-vector transform 'm' to 'v'
+Vec2f HApply(const Mat3f& m, Vec2f v);  // Apply given affine col-vector transform 'm' to 'v'
+Vec3f HApply(const Mat4f& m, Vec3f v);  // Apply given affine col-vector transform 'm' to 'v'
+
+Vec2f HProj(Vec2f v, const Mat3f& m);   // Apply given affine row-vector projection 'm' to 'v'
+Vec3f HProj(Vec3f v, const Mat4f& m);   // Apply given affine row-vector projection 'm' to 'v'
+Vec2f HProj(const Mat3f& m, Vec2f v);   // Apply given affine col-vector projection 'm' to 'v'
+Vec3f HProj(const Mat4f& m, Vec3f v);   // Apply given affine col-vector projection 'm' to 'v'
+
 // Legacy, strongly recommended you use explicit RRot/CRot calls.
 #ifdef VL_ROW_ORIENT
 inline Mat2f Rot2f(float theta)                            { return RRot2f(theta); }
@@ -2832,14 +2983,14 @@ inline Mat2f xform(const Mat2f& m, const Mat2f& n)
 { return n * m; }
 
 inline Vec2f xform(const Mat3f& m, const Vec2f& v)
-{ return proj(Vec3f(v, 1.0) * m); }
+{ return proj(Vec3f(v, float(1)) * m); }
 inline Vec3f xform(const Mat3f& m, const Vec3f& v)
 { return v * m; }
 inline Mat3f xform(const Mat3f& m, const Mat3f& n)
 { return n * m; }
 
 inline Vec3f xform(const Mat4f& m, const Vec3f& v)
-{ return proj(Vec4f(v, 1.0) * m); }
+{ return proj(Vec4f(v, float(1)) * m); }
 inline Vec4f xform(const Mat4f& m, const Vec4f& v)
 { return v * m; }
 inline Mat4f xform(const Mat4f& m, const Mat4f& n)
@@ -2866,14 +3017,14 @@ inline Mat2f xform(const Mat2f& m, const Mat2f& n)
 { return m * n; }
 
 inline Vec2f xform(const Mat3f& m, const Vec2f& v)
-{ return proj(m * Vec3f(v, 1.0)); }
+{ return proj(m * Vec3f(v, float(1))); }
 inline Vec3f xform(const Mat3f& m, const Vec3f& v)
 { return m * v; }
 inline Mat3f xform(const Mat3f& m, const Mat3f& n)
 { return m * n; }
 
 inline Vec3f xform(const Mat4f& m, const Vec3f& v)
-{ return proj(m * Vec4f(v, 1.0)); }
+{ return proj(m * Vec4f(v, float(1))); }
 inline Vec4f xform(const Mat4f& m, const Vec4f& v)
 { return m * v; }
 inline Mat4f xform(const Mat4f& m, const Mat4f& n)
@@ -2901,6 +3052,50 @@ inline Mat4f HCRot4f(const Quatf& q)
 inline Mat4f HRRot4f(const Quatf& q)
 {
     return Mat4f(RRotFromQuat(q));
+}
+
+inline Vec2f HApply(Vec2f v, const Mat3f& m)
+{
+    return v.x * m.x.AsVec2() + v.y * m.y.AsVec2() + m.z.AsVec2();
+}
+
+inline Vec3f HApply(Vec3f v, const Mat4f& m)
+{
+    return v.x * m.x.AsVec3() + v.y * m.y.AsVec3() + v.z * m.z.AsVec3() + m.w.AsVec3();
+}
+
+inline Vec2f HApply(const Mat3f& m, Vec2f v)
+{
+    return Vec2f(dot(m.x.AsVec2(), v) + m.x.z, dot(m.y.AsVec2(), v) + m.y.z);
+}
+
+inline Vec3f HApply(const Mat4f& m, Vec3f v)
+{
+    return Vec3f(dot(m.x.AsVec3(), v) + m.x.w, dot(m.y.AsVec3(), v) + m.y.w, dot(m.z.AsVec3(), v) + m.z.w);
+}
+
+inline Vec2f HProj(Vec2f v, const Mat3f& m)
+{
+    Vec3f hv = v.x * m.x + v.y * m.y + m.z;
+    return proj(hv);
+}
+
+inline Vec3f HProj(Vec3f v, const Mat4f& m)
+{
+    Vec4f hv = v.x * m.x + v.y * m.y + v.z * m.z + m.w;
+    return proj(hv);
+}
+
+inline Vec2f HProj(const Mat3f& m, Vec2f v)
+{
+    Vec3f hv(dot(m.x.AsVec2(), v) + m.x.z, dot(m.y.AsVec2(), v) + m.y.z, dot(m.z.AsVec2(), v) + m.z.z);
+    return proj(hv);
+}
+
+inline Vec3f HProj(const Mat4f& m, Vec3f v)
+{
+    Vec4f hv(dot(m.x.AsVec3(), v) + m.x.w, dot(m.y.AsVec3(), v) + m.y.w, dot(m.z.AsVec3(), v) + m.z.w, dot(m.w.AsVec3(), v) + m.w.w);
+    return proj(hv);
 }
 
 #endif

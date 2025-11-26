@@ -11,16 +11,16 @@
 
 VL_NS_BEGIN
 
-using ::abs;
-using ::sqrt;
+using std::abs;
+using std::sqrt;
 
 // --- Inlines ----------------------------------------------------------------
 
 // additions to arithmetic functions
 
-inline float  len   (float  x) { return std::abs(x); }
-inline double len   (double x) { return std::abs(x); }
-inline int    len   (int    x) { return std::abs(x); }
+inline float  len   (float  x) { return abs(x); }
+inline double len   (double x) { return abs(x); }
+inline int    len   (int    x) { return abs(x); }
 
 inline float  sqrlen(float  x) { return x * x; }
 inline double sqrlen(double x) { return x * x; }

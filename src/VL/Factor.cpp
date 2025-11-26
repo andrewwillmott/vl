@@ -258,7 +258,7 @@ void BackSubstitute(TRefMat A, TMElt epsilon)
             if (len(pivot) < epsilon)
                 continue;
 
-            // First normalise this row so pivot = 1
+            // First normalize this row so pivot = 1
             A(ir, ic) = 1;
             for (int kc = ic + 1; kc < nc; kc++)     // Only do elements to the right of the pivot
                 A(ir, kc) /= pivot;

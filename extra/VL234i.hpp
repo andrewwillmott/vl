@@ -88,6 +88,9 @@ const double vl_twoPi        = vl_pi * 2.0;
 
 const double vl_huge = vld_huge;
 
+const float  vlf_eps = 1.19209290E-07F;
+const double vld_eps = 2.2204460492503131e-016;
+
 struct VLVecType { typedef void IsVec; typedef int Elt; };
 struct VLMatType { typedef void IsMat; typedef int Elt; };
 struct VLVolType { typedef void IsVol; typedef int Elt; };
@@ -110,16 +113,16 @@ const int VL_CS(twoPi)     = int(VL_CS(pi) * 2);
 
 
 
-using ::abs;
-using ::sqrt;
+using std::abs;
+using std::sqrt;
 
 // --- Inlines ----------------------------------------------------------------
 
 // additions to arithmetic functions
 
-inline float  len   (float  x) { return std::abs(x); }
-inline double len   (double x) { return std::abs(x); }
-inline int    len   (int    x) { return std::abs(x); }
+inline float  len   (float  x) { return abs(x); }
+inline double len   (double x) { return abs(x); }
+inline int    len   (int    x) { return abs(x); }
 
 inline float  sqrlen(float  x) { return x * x; }
 inline double sqrlen(double x) { return x * x; }

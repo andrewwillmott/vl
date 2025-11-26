@@ -29,7 +29,7 @@
     #include "VL/Mat2.hpp"
     #include "VL/Mat3.hpp"
     #include "VL/Mat4.hpp"
-    
+
     #include "VL/Print234.hpp"
     #include "VL/Stream234.hpp"
 #else
@@ -45,8 +45,5 @@
 #include "VL/Stream.hpp"
 
 #include "VL/End.hpp"
-
-#undef VL_PRINT_INT
-#undef VL_NO_REAL
 
 #endif

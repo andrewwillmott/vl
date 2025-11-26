@@ -42,6 +42,16 @@ TMat4 HRRot4  (const TVec3& from, const TVec3& to);  // RRot3 as 4x4 homogeneous
 TMat4 HCTrans4(const TVec3& t);     // Given 3d translation as 4x4 homogeneous matrix on col vectors
 TMat4 HRTrans4(const TVec3& t);     // Given 3d translation as 4x4 homogeneous matrix on row vectors
 
+TVec2 HApply(TVec2 v, const TMat3& m);  // Apply given affine row-vector transform 'm' to 'v'
+TVec3 HApply(TVec3 v, const TMat4& m);  // Apply given affine row-vector transform 'm' to 'v'
+TVec2 HApply(const TMat3& m, TVec2 v);  // Apply given affine col-vector transform 'm' to 'v'
+TVec3 HApply(const TMat4& m, TVec3 v);  // Apply given affine col-vector transform 'm' to 'v'
+
+TVec2 HProj(TVec2 v, const TMat3& m);   // Apply given affine row-vector projection 'm' to 'v'
+TVec3 HProj(TVec3 v, const TMat4& m);   // Apply given affine row-vector projection 'm' to 'v'
+TVec2 HProj(const TMat3& m, TVec2 v);   // Apply given affine col-vector projection 'm' to 'v'
+TVec3 HProj(const TMat4& m, TVec3 v);   // Apply given affine col-vector projection 'm' to 'v'
+
 // Legacy, strongly recommended you use explicit RRot/CRot calls.
 #ifdef VL_ROW_ORIENT
 inline TMat2 Rot2(TElt theta)                            { return RRot2(theta); }
@@ -64,14 +74,14 @@ inline TMat2 xform(const TMat2& m, const TMat2& n)
 { return n * m; }
 
 inline TVec2 xform(const TMat3& m, const TVec2& v)
-{ return proj(TVec3(v, 1.0) * m); }
+{ return proj(TVec3(v, TElt(1)) * m); }
 inline TVec3 xform(const TMat3& m, const TVec3& v)
 { return v * m; }
 inline TMat3 xform(const TMat3& m, const TMat3& n)
 { return n * m; }
 
 inline TVec3 xform(const TMat4& m, const TVec3& v)
-{ return proj(TVec4(v, 1.0) * m); }
+{ return proj(TVec4(v, TElt(1)) * m); }
 inline TVec4 xform(const TMat4& m, const TVec4& v)
 { return v * m; }
 inline TMat4 xform(const TMat4& m, const TMat4& n)
@@ -98,14 +108,14 @@ inline TMat2 xform(const TMat2& m, const TMat2& n)
 { return m * n; }
 
 inline TVec2 xform(const TMat3& m, const TVec2& v)
-{ return proj(m * TVec3(v, 1.0)); }
+{ return proj(m * TVec3(v, TElt(1))); }
 inline TVec3 xform(const TMat3& m, const TVec3& v)
 { return m * v; }
 inline TMat3 xform(const TMat3& m, const TMat3& n)
 { return m * n; }
 
 inline TVec3 xform(const TMat4& m, const TVec3& v)
-{ return proj(m * TVec4(v, 1.0)); }
+{ return proj(m * TVec4(v, TElt(1))); }
 inline TVec4 xform(const TMat4& m, const TVec4& v)
 { return m * v; }
 inline TMat4 xform(const TMat4& m, const TMat4& n)
@@ -133,6 +143,50 @@ inline TMat4 HCRot4(const TQuat& q)
 inline TMat4 HRRot4(const TQuat& q)
 {
     return TMat4(RRotFromQuat(q));
+}
+
+inline TVec2 HApply(TVec2 v, const TMat3& m)
+{
+    return v.x * m.x.AsVec2() + v.y * m.y.AsVec2() + m.z.AsVec2();
+}
+
+inline TVec3 HApply(TVec3 v, const TMat4& m)
+{
+    return v.x * m.x.AsVec3() + v.y * m.y.AsVec3() + v.z * m.z.AsVec3() + m.w.AsVec3();
+}
+
+inline TVec2 HApply(const TMat3& m, TVec2 v)
+{
+    return TVec2(dot(m.x.AsVec2(), v) + m.x.z, dot(m.y.AsVec2(), v) + m.y.z);
+}
+
+inline TVec3 HApply(const TMat4& m, TVec3 v)
+{
+    return TVec3(dot(m.x.AsVec3(), v) + m.x.w, dot(m.y.AsVec3(), v) + m.y.w, dot(m.z.AsVec3(), v) + m.z.w);
+}
+
+inline TVec2 HProj(TVec2 v, const TMat3& m)
+{
+    TVec3 hv = v.x * m.x + v.y * m.y + m.z;
+    return proj(hv);
+}
+
+inline TVec3 HProj(TVec3 v, const TMat4& m)
+{
+    TVec4 hv = v.x * m.x + v.y * m.y + v.z * m.z + m.w;
+    return proj(hv);
+}
+
+inline TVec2 HProj(const TMat3& m, TVec2 v)
+{
+    TVec3 hv(dot(m.x.AsVec2(), v) + m.x.z, dot(m.y.AsVec2(), v) + m.y.z, dot(m.z.AsVec2(), v) + m.z.z);
+    return proj(hv);
+}
+
+inline TVec3 HProj(const TMat4& m, TVec3 v)
+{
+    TVec4 hv(dot(m.x.AsVec3(), v) + m.x.w, dot(m.y.AsVec3(), v) + m.y.w, dot(m.z.AsVec3(), v) + m.z.w, dot(m.w.AsVec3(), v) + m.w.w);
+    return proj(hv);
 }
 
 #endif

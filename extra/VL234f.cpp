@@ -707,16 +707,16 @@ Mat3f Mat4f::AsMat3() const
 
 Quatf MakeQuat(const Vec3f& v1, const Vec3f& v2)
 {
-   Vec3f half = norm_safe(v1 + v2);
+    Vec3f half = norm_safe(v1 + v2);
 
-   float w = dot(half, v1);
+    float w = dot(half, v1);
 
-   if (w != float(0))
-       return Quatf(cross(v1, half), w);
+    if (w != float(0))
+        return Quatf(cross(v1, half), w);
 
-   Vec3f altDir(v2.z, v2.x, v2.y);
+    Vec3f altDir(v2.z, v2.x, v2.y);
 
-   return Quatf(norm(cross(v1, altDir)), w);
+    return Quatf(norm(cross(v1, altDir)), w);
 }
 
 Quatf MakeQuat(const Vec3f& axis, float theta)
@@ -736,24 +736,11 @@ Quatf QuatMult(const Quatf& a, const Quatf& b)
     const Vec3f& va = a.AsVec3();
     const Vec3f& vb = b.AsVec3();
 
-    result = Quatf(a.w * vb + b.w * va + cross(va, vb), a.w * b.w - dot(va, vb));
+    result = Quatf(a.w * vb + b.w * va + cross(vb, va), a.w * b.w - dot(va, vb));
 
     return result;
 }
 #endif
-
-Quatf QuatMult(const Quatf& a, const Quatf& b)
-{
-    Quatf result;
-
-    // 16/12
-    result.x = + a.x * b.w + a.y * b.z - a.z * b.y + a.w * b.x;
-    result.y = - a.x * b.z + a.y * b.w + a.z * b.x + a.w * b.y;
-    result.z = + a.x * b.y - a.y * b.x + a.z * b.w + a.w * b.z;
-    result.w = - a.x * b.x - a.y * b.y - a.z * b.z + a.w * b.w;
-
-    return result;
-}
 
 Quatf MakeQuatFromCRot(const Mat3f& R)
 {
@@ -880,6 +867,7 @@ Quatf MakeQuatFromRRot(const Mat3f& R)
     result[qc ^ 1] = qs * (R.x.y + qs1 * R.y.x);
     result[qc ^ 2] = qs * (R.z.x + qs2 * R.x.z);
     result[qc ^ 3] = qs * (R.y.z + qs3 * R.z.y);
+
     return result;
 #endif
 }
@@ -936,48 +924,38 @@ Mat3f RRotFromQuat(const Quatf& q)
 
 Vec4f AxisAngleFromQuat(const Quatf& q)
 {
-    Vec4f aa = norm(q);
-    float ct = aa.w;
+    Vec4f qn = norm(q);
+
+    float ct = qn.w;
     float st = sqrt(float(1) - sqr(ct));
 
-    aa.AsVec3() /= st + float(1e-6);
-    aa.w = float(2) * acos(ct);
+    qn.AsVec3() /= st + float(1e-6);
+    qn.w = float(2) * atan2(st, ct);  // rather than acos(ct), more stable, no nans on ct = 1 + eps
 
-    return aa;
+    return qn;
 }
-
-#ifdef VL_DEBUG
-namespace
-{
-    inline bool IsNormalised(const Quatf& v, float eps = 1e-6f)
-    {
-        float s = sqrlen(v);
-        return s > 1.0f - eps && s < 1.0f + eps;
-    }
-}
-#endif
 
 Quatf SLerp(const Quatf& q1, const Quatf& q2, float s)
 {
-    VL_ASSERT(IsNormalised(q1));
-    VL_ASSERT(IsNormalised(q2));
+    VL_ASSERT(vl_is_unit(q1));
+    VL_ASSERT(vl_is_unit(q2));
     VL_ASSERT(s >= float(0) && s <= float(1));
 
     // Calculate angle between them.
     float cosHalfTheta = dot(q1, q2);
 
     // If q1 = q2 or q1 = -q2 then theta = 0 and we can return q1
-    if (abs(cosHalfTheta) >= float(0.999))
+    if (abs(cosHalfTheta) >= float(0.99999))
         return q1;
 
     float sinHalfTheta = sqrt(float(1) - cosHalfTheta * cosHalfTheta);
 
     // If theta = pi then result is not fully defined, we could rotate around
     // any axis normal to q1 or q2.
-    if (sinHalfTheta < float(1e-3))
+    if (sinHalfTheta < float(1e-5))
         return float(0.5) * (q1 + q2);
 
-    float halfTheta = std::acos(cosHalfTheta);
+    float halfTheta = std::atan2(sinHalfTheta, cosHalfTheta);
 
     float t = float(1) - s;
     float ratio1 = std::sin(t * halfTheta) / sinHalfTheta;
@@ -990,14 +968,14 @@ void DecomposeTwist
 (
     const Quatf& q,
     const Vec3f& axis,
-    Quatf*       twist,
-    Quatf*       noTwist
+    Quatf*       noTwist,
+    Quatf*       twist
 )
 {
-    Vec3f rotAxis = QuatApply(q, axis);
+    Vec3f rotAxis = QuatApply(axis, q);
 
     *noTwist = MakeQuat(axis, rotAxis);
-    *twist = QuatMult(QuatInv(*noTwist), q);
+    *twist = MakeQuat(*noTwist, q);
 }
 
 // See Eberly's "Constrained Quaternions"
@@ -1014,7 +992,7 @@ Quatf ClosestAxialRotTo(VLAxis a, const Quatf& qd)
         float invLength = float(1) / sqrt(sqrLength);
 
         q[a] = qd[a] * invLength;
-        q.w = qd.w * invLength;
+        q.w  = qd.w  * invLength;
     }
 
     return q;
@@ -1061,6 +1039,41 @@ Quatf ClosestRotXYTo(const Quatf& qd)
     float invLength = float(1) / sqrt(det);
 
     return Quatf(qd.x * invLength, float(0), float(0), qd.w * invLength);
+}
+
+Vec3f QuatDiff3(const Quatf& a, const Quatf& b)
+{
+    Vec3f v;
+    v.x = + a.w * b.x - a.z * b.y + a.y * b.z - a.x * b.w;
+    v.y = + a.z * b.x + a.w * b.y - a.x * b.z - a.y * b.w;
+    v.z = - a.y * b.x + a.x * b.y + a.w * b.z - a.z * b.w;
+
+    float c = dot(a, b);
+    float s = len(v);
+
+    v *= (std::atan2(s, c) / (s + float(1e-8)));
+
+    return v;
+}
+
+Quatf SLerp(Quatf q, Vec3f wd, float t)
+{
+    return QuatMult(q, ExpUnit3(wd * t));
+}
+
+Quatf SLerp(Quatf q, Vec3f n, float w, float t)
+{
+    float s, c;
+    vl_sincos(w * t, &s, &c);
+    n *= s;
+
+    Quatf result;
+    result.x = + q.w * n.x + q.z * n.y - q.y * n.z;
+    result.y = - q.z * n.x + q.w * n.y + q.x * n.z;
+    result.z = + q.y * n.x - q.x * n.y + q.w * n.z;
+    result.w = - q.x * n.x - q.y * n.y - q.z * n.z;
+    result += q * c;
+    return result;
 }
 
 

@@ -1,3 +1,10 @@
+#
+# Makefile for generating cut-down single header/source variants
+#
+
+ifeq ($(origin CXX), default) # gmake defaults this to g++ instead of c++
+	CXX = c++
+endif
 CXXFLAGS := $(CXXFLAGS) --std=c++11
 
 VL234F_SUBS = -f vl234f.sed
@@ -83,7 +90,7 @@ vl234i:
 	@sed $(VL234I_SUBS) ../src/VL/Vec4.cpp          >> VL234i.cpp
 #	@sed $(VL234I_SUBS) ../src/VL/Stream234.cpp     >> VL234i.cpp
 
-test:
+test: vl234f
 	$(CXX) $(CXXFLAGS) -I. -I../h VL234Test.cpp VL234f.cpp -o vl234test
 	@-./vl234test | \
 	  sed -e 's/[0-9].[0-9]*e-[01][78]/0/g; s/-0\([^\.0-9]\)/0\1/g' > out.txt

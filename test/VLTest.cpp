@@ -537,7 +537,7 @@ void TestNDNumerical()
     cout << "start x: " << x << endl;
 
     int steps = 100;
-    error = SolveConjGrad(A, x, b, 1e-12f, &steps);
+    error = SolveConjGrad(A, x, b, 1e-12, &steps);
 
     cout << "iterations: " << steps << endl;
     cout << "x: " << x << endl;

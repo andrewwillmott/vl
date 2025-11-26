@@ -2,6 +2,9 @@
 # Makefile for a VL test program
 #
 
+ifeq ($(origin CXX), default) # gmake defaults this to g++ instead of c++
+	CXX = c++
+endif
 CXXFLAGS := $(CXXFLAGS) --std=c++11
 
 check: clean vltest

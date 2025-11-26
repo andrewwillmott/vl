@@ -46,6 +46,4 @@ namespace
 
 #include "VL/End.hpp"
 
-#undef VL_PRINT_INT
-#undef VL_NO_REAL
 #endif

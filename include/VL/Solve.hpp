@@ -18,7 +18,7 @@ TMElt SolveOverRelax
     TRefVec      x,
     TConstRefVec b,
     TMElt        epsilon,
-    TMElt        omega = 1.0,
+    TMElt        omega = TMElt(1),
     int*         steps = 0
 );
 // Solves A x = b, if specified, *steps contains max iterations, and actual #

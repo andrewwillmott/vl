@@ -95,3 +95,6 @@ VL_NS_END
 #undef VL_OPS
 #undef VL_OPS_INTEROP1
 #undef VL_OPS_INTEROP2
+
+#undef VL_NO_REAL
+#undef VL_PRINT_INT

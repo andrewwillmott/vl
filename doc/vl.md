@@ -412,7 +412,7 @@ addition to 3x3 matrices. Quaternions are a Vec4 (typedef'd to Quat[fd] for
 convenience), where xyz is the vector part, and w is the scalar part. The former
 can be interpreted as the axis of rotation, and the latter as being related to
 the angle of rotation, specifically, cos(theta/2). To be a valid rotation, the
-quaternion must be normalised.
+quaternion must be normalized.
 
 Quaternions can be constructed as follows:
 
@@ -423,8 +423,8 @@ Quaternions can be constructed as follows:
 
 Where theta is in radians. The library supports the classic operations:
 
-    Vec3 QuatApply(Quat q, Vec3 p);       // Transform point p by quaternion q
-    Quat QuatMult (Quat a, Quat b);       // Concatenate quaternions, the result represents applying 'b' then 'a'.
+    Vec3 QuatApply(Vec3 p, Quat q);       // Transform point p by applying quaternion q
+    Quat QuatMult (Quat a, Quat b);       // Concatenate quaternions, the result represents applying 'a' then 'b'.
     Quat QuatInv  (Quat q);               // Quaternion inverse.
 
 Quaternions are often used for interpolating between rotations. Two options

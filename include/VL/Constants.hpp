@@ -34,6 +34,9 @@ const double vl_twoPi        = vl_pi * 2.0;
 
 const double vl_huge = vld_huge;
 
+const float  vlf_eps = 1.19209290E-07F;
+const double vld_eps = 2.2204460492503131e-016;
+
 struct VLVecType { typedef void IsVec; typedef TElt Elt; };
 struct VLMatType { typedef void IsMat; typedef TElt Elt; };
 struct VLVolType { typedef void IsVol; typedef TElt Elt; };

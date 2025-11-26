@@ -2,6 +2,9 @@
 # Makefile for VL library
 #
 
+ifeq ($(origin CXX), default) # gmake defaults this to g++ instead of c++
+	CXX = c++
+endif
 CXXFLAGS ?= --std=c++11
 OPTS=-O3 -Wall
 DBG_OPTS=-DVL_DEBUG -g

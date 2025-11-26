@@ -14,6 +14,9 @@
 #define VL_V_ELT int
 #define VL_V_SUFF(X) X ## i
 
+#define VL_NO_REAL
+#define VL_PRINT_INT
+
 #include "VL/Begin.hpp"
 
 #include "VL/Constants.hpp"

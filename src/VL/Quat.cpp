@@ -12,16 +12,16 @@
 
 TQuat MakeQuat(const TVec3& v1, const TVec3& v2)
 {
-   TVec3 half = norm_safe(v1 + v2);
+    TVec3 half = norm_safe(v1 + v2);
 
-   TElt w = dot(half, v1);
+    TElt w = dot(half, v1);
 
-   if (w != TElt(0))
-       return TQuat(cross(v1, half), w);
+    if (w != TElt(0))
+        return TQuat(cross(v1, half), w);
 
-   TVec3 altDir(v2.z, v2.x, v2.y);
+    TVec3 altDir(v2.z, v2.x, v2.y);
 
-   return TQuat(norm(cross(v1, altDir)), w);
+    return TQuat(norm(cross(v1, altDir)), w);
 }
 
 TQuat MakeQuat(const TVec3& axis, TElt theta)
@@ -41,24 +41,11 @@ TQuat QuatMult(const TQuat& a, const TQuat& b)
     const TVec3& va = a.AsVec3();
     const TVec3& vb = b.AsVec3();
 
-    result = TQuat(a.w * vb + b.w * va + cross(va, vb), a.w * b.w - dot(va, vb));
+    result = TQuat(a.w * vb + b.w * va + cross(vb, va), a.w * b.w - dot(va, vb));
 
     return result;
 }
 #endif
-
-TQuat QuatMult(const TQuat& a, const TQuat& b)
-{
-    TQuat result;
-
-    // 16/12
-    result.x = + a.x * b.w + a.y * b.z - a.z * b.y + a.w * b.x;
-    result.y = - a.x * b.z + a.y * b.w + a.z * b.x + a.w * b.y;
-    result.z = + a.x * b.y - a.y * b.x + a.z * b.w + a.w * b.z;
-    result.w = - a.x * b.x - a.y * b.y - a.z * b.z + a.w * b.w;
-
-    return result;
-}
 
 TQuat MakeQuatFromCRot(const TMat3& R)
 {
@@ -185,6 +172,7 @@ TQuat MakeQuatFromRRot(const TMat3& R)
     result[qc ^ 1] = qs * (R.x.y + qs1 * R.y.x);
     result[qc ^ 2] = qs * (R.z.x + qs2 * R.x.z);
     result[qc ^ 3] = qs * (R.y.z + qs3 * R.z.y);
+
     return result;
 #endif
 }
@@ -241,48 +229,38 @@ TMat3 RRotFromQuat(const TQuat& q)
 
 TVec4 AxisAngleFromQuat(const TQuat& q)
 {
-    TVec4 aa = norm(q);
-    TElt ct = aa.w;
+    TVec4 qn = norm(q);
+
+    TElt ct = qn.w;
     TElt st = sqrt(TElt(1) - sqr(ct));
 
-    aa.AsVec3() /= st + TElt(1e-6);
-    aa.w = TElt(2) * acos(ct);
+    qn.AsVec3() /= st + TElt(1e-6);
+    qn.w = TElt(2) * atan2(st, ct);  // rather than acos(ct), more stable, no nans on ct = 1 + eps
 
-    return aa;
+    return qn;
 }
-
-#ifdef VL_DEBUG
-namespace
-{
-    inline bool IsNormalised(const TQuat& v, TElt eps = TElt(1e-6))
-    {
-        TElt s = sqrlen(v);
-        return s > (1 - eps) && s < (1 + eps);
-    }
-}
-#endif
 
 TQuat SLerp(const TQuat& q1, const TQuat& q2, TElt s)
 {
-    VL_ASSERT(IsNormalised(q1));
-    VL_ASSERT(IsNormalised(q2));
+    VL_ASSERT(vl_is_unit(q1));
+    VL_ASSERT(vl_is_unit(q2));
     VL_ASSERT(s >= TElt(0) && s <= TElt(1));
 
     // Calculate angle between them.
     TElt cosHalfTheta = dot(q1, q2);
 
     // If q1 = q2 or q1 = -q2 then theta = 0 and we can return q1
-    if (abs(cosHalfTheta) >= TElt(0.999))
+    if (abs(cosHalfTheta) >= TElt(0.99999))
         return q1;
 
     TElt sinHalfTheta = sqrt(TElt(1) - cosHalfTheta * cosHalfTheta);
 
     // If theta = pi then result is not fully defined, we could rotate around
     // any axis normal to q1 or q2.
-    if (sinHalfTheta < TElt(1e-3))
+    if (sinHalfTheta < TElt(1e-5))
         return TElt(0.5) * (q1 + q2);
 
-    TElt halfTheta = std::acos(cosHalfTheta);
+    TElt halfTheta = std::atan2(sinHalfTheta, cosHalfTheta);
 
     TElt t = TElt(1) - s;
     TElt ratio1 = std::sin(t * halfTheta) / sinHalfTheta;
@@ -295,14 +273,14 @@ void DecomposeTwist
 (
     const TQuat& q,
     const TVec3& axis,
-    TQuat*       twist,
-    TQuat*       noTwist
+    TQuat*       noTwist,
+    TQuat*       twist
 )
 {
-    TVec3 rotAxis = QuatApply(q, axis);
+    TVec3 rotAxis = QuatApply(axis, q);
 
     *noTwist = MakeQuat(axis, rotAxis);
-    *twist = QuatMult(QuatInv(*noTwist), q);
+    *twist = MakeQuat(*noTwist, q);
 }
 
 // See Eberly's "Constrained Quaternions"
@@ -319,7 +297,7 @@ TQuat ClosestAxialRotTo(VLAxis a, const TQuat& qd)
         TElt invLength = TElt(1) / sqrt(sqrLength);
 
         q[a] = qd[a] * invLength;
-        q.w = qd.w * invLength;
+        q.w  = qd.w  * invLength;
     }
 
     return q;
@@ -366,4 +344,39 @@ TQuat ClosestRotXYTo(const TQuat& qd)
     TElt invLength = TElt(1) / sqrt(det);
 
     return TQuat(qd.x * invLength, TElt(0), TElt(0), qd.w * invLength);
+}
+
+TVec3 QuatDiff3(const TQuat& a, const TQuat& b)
+{
+    TVec3 v;
+    v.x = + a.w * b.x - a.z * b.y + a.y * b.z - a.x * b.w;
+    v.y = + a.z * b.x + a.w * b.y - a.x * b.z - a.y * b.w;
+    v.z = - a.y * b.x + a.x * b.y + a.w * b.z - a.z * b.w;
+
+    TElt c = dot(a, b);
+    TElt s = len(v);
+
+    v *= (std::atan2(s, c) / (s + TElt(1e-8)));
+
+    return v;
+}
+
+TQuat SLerp(TQuat q, TVec3 wd, TElt t)
+{
+    return QuatMult(q, ExpUnit3(wd * t));
+}
+
+TQuat SLerp(TQuat q, TVec3 n, TElt w, TElt t)
+{
+    TElt s, c;
+    vl_sincos(w * t, &s, &c);
+    n *= s;
+
+    TQuat result;
+    result.x = + q.w * n.x + q.z * n.y - q.y * n.z;
+    result.y = - q.z * n.x + q.w * n.y + q.x * n.z;
+    result.z = + q.y * n.x - q.x * n.y + q.w * n.z;
+    result.w = - q.x * n.x - q.y * n.y - q.z * n.z;
+    result += q * c;
+    return result;
 }
