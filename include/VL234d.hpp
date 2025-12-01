@@ -20,7 +20,6 @@
 #include "VL/Vec2.hpp"
 #include "VL/Vec3.hpp"
 #include "VL/Vec4.hpp"
-
 #include "VL/Swizzle.hpp"
 
 #include "VL/Mat2.hpp"

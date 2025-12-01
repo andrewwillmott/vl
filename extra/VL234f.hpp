@@ -2638,7 +2638,8 @@ inline Vec4f col(const Mat4f& m, int j)
 #define VL_QUAT_H
 
 
-// --- Quat Class -------------------------------------------------------------
+
+// --- Quat Utilities ---------------------------------------------------------
 
 
 typedef Vec4f Quatf;
@@ -2693,6 +2694,7 @@ Quatf ClosestRotXYTo(const Quatf& q);               // Find closest rotation aro
 
 Quatf QuatPower(const Quatf& q, float t); // Returns q^t
 Quatf QuatSqrt(Quatf q);                 // Returns q^1/2, faster than QuatPower/Log/etc.
+Quatf QuatSqr (Quatf q);                 // Returns q^2, faster than QuatMult/QuatPower.
 
 Quatf Log(const Quatf& q);       // Quaternion log: analogue of [sin(theta), cos(theta)] -> theta. For unit quaternions, result.w = 0
 Quatf Exp(const Quatf& q);       // Quaternion exponentiation: analogue of theta -> [sin(theta), cos(theta)]
@@ -2782,8 +2784,8 @@ inline Vec3f ZFromQuat(const Quatf& q)
 inline Vec3f QuatApply(const Vec3f& p, const Quatf& q)
 {
     // total = 18*, 12+
-    Vec3f b0 = cross(q.AsVec3(), p);
-    Vec3f b1 = cross(q.AsVec3(), b0);
+    Vec3f b0 = cross(xyz(q), p);
+    Vec3f b1 = cross(xyz(q), b0);
     return p + 2 * (b0 * q.w + b1);
 }
 
@@ -2791,10 +2793,10 @@ inline Quatf QuatMult(const Quatf& a, const Quatf& b)
 {
     // total = 16*, 12+
     Quatf result;
-    result.x = + a.w * b.x + a.z * b.y - a.y * b.z + a.x * b.w;
+    result.x = + a.w * b.x + a.z * b.y - a.y * b.z + a.x * b.w;  // a.w b.v + b.w a.v + a.v x b.v
     result.y = - a.z * b.x + a.w * b.y + a.x * b.z + a.y * b.w;
     result.z = + a.y * b.x - a.x * b.y + a.w * b.z + a.z * b.w;
-    result.w = - a.x * b.x - a.y * b.y - a.z * b.z + a.w * b.w;
+    result.w = - a.x * b.x - a.y * b.y - a.z * b.z + a.w * b.w;  // a.w * b.w - dot(a, b)
 
     return result;
 }
@@ -2869,42 +2871,47 @@ inline Quatf QuatSqrt(Quatf q)
     return norm_safe(q);  // https://maxime-tournier.github.io/notes/quaternions.html#fast-square-root
 }
 
+inline Quatf QuatSqr(Quatf q)
+{
+    return { 2 * xyz(q) * q.w, sqr(q.w) - sqrlen(xyz(q)) };  // cross term drops out.
+}
+
 inline Quatf Log(const Quatf& q)
 {
     float qLen = len(q);
-    float s = len(q.AsVec3());
+    float s = len(xyz(q));
     float c = q.w;
-    return Quatf((std::atan2(s, c) / (s + float(1e-8))) * q.AsVec3(), std::log(qLen));
+    return Quatf((std::atan2(s, c) / (s + float(1e-8))) * xyz(q), std::log(qLen));
 }
 
 inline Quatf Exp(const Quatf& q)
 {
-    float theta = len(q.AsVec3());
-    return std::exp(q.w) * Quatf(q.AsVec3() * (std::sin(theta) / (theta + vlf_eps)), std::cos(theta));
+    float theta = len(xyz(q));
+    return std::exp(q.w) * Quatf(xyz(q) * (std::sin(theta) / (theta + vlf_eps)), std::cos(theta));
 }
 
 inline Quatf LogUnit(const Quatf& q)
 {
     VL_ASSERT(vl_is_unit(q));
-    float s = len(q.AsVec3());
+    float s = len(xyz(q));
     float c = q.w;
-    return Quatf((std::atan2(s, c) / (s + float(1e-8))) * q.AsVec3(), 0);
+    return Quatf((std::atan2(s, c) / (s + float(1e-8))) * xyz(q), 0);
 }
 
 inline Quatf ExpUnit(const Quatf& q)
 {
     VL_ASSERT(abs(q.w) < float(1e-8));
 
-    float theta = len(q.AsVec3());
-    return Quatf(q.AsVec3() * (std::sin(theta) / (theta + float(1e-8))), std::cos(theta));
+    float theta = len(xyz(q));
+    return Quatf(xyz(q) * (std::sin(theta) / (theta + float(1e-8))), std::cos(theta));
 }
 
 inline Vec3f LogUnit3(const Quatf& q)
 {
     VL_ASSERT(vl_is_unit(q));
-    float s = len(q.AsVec3());
+    float s = len(xyz(q));
     float c = q.w;
-    return (std::atan2(s, c) / (s + float(1e-8))) * q.AsVec3();
+    return (std::atan2(s, c) / (s + float(1e-8))) * xyz(q);
 }
 
 inline Quatf ExpUnit3(const Vec3f& lq)

@@ -9,8 +9,10 @@
 #ifndef VL_QUAT_H
 #define VL_QUAT_H
 
+#include "Swizzle.hpp"
 
-// --- Quat Class -------------------------------------------------------------
+
+// --- Quat Utilities ---------------------------------------------------------
 
 
 typedef TVec4 TQuat;
@@ -65,6 +67,7 @@ TQuat ClosestRotXYTo(const TQuat& q);               // Find closest rotation aro
 
 TQuat QuatPower(const TQuat& q, TElt t); // Returns q^t
 TQuat QuatSqrt(TQuat q);                 // Returns q^1/2, faster than QuatPower/Log/etc.
+TQuat QuatSqr (TQuat q);                 // Returns q^2, faster than QuatMult/QuatPower.
 
 TQuat Log(const TQuat& q);       // Quaternion log: analogue of [sin(theta), cos(theta)] -> theta. For unit quaternions, result.w = 0
 TQuat Exp(const TQuat& q);       // Quaternion exponentiation: analogue of theta -> [sin(theta), cos(theta)]
@@ -154,8 +157,8 @@ inline TVec3 ZFromQuat(const TQuat& q)
 inline TVec3 QuatApply(const TVec3& p, const TQuat& q)
 {
     // total = 18*, 12+
-    TVec3 b0 = cross(q.AsVec3(), p);
-    TVec3 b1 = cross(q.AsVec3(), b0);
+    TVec3 b0 = cross(xyz(q), p);
+    TVec3 b1 = cross(xyz(q), b0);
     return p + 2 * (b0 * q.w + b1);
 }
 
@@ -163,10 +166,10 @@ inline TQuat QuatMult(const TQuat& a, const TQuat& b)
 {
     // total = 16*, 12+
     TQuat result;
-    result.x = + a.w * b.x + a.z * b.y - a.y * b.z + a.x * b.w;
+    result.x = + a.w * b.x + a.z * b.y - a.y * b.z + a.x * b.w;  // a.w b.v + b.w a.v + a.v x b.v
     result.y = - a.z * b.x + a.w * b.y + a.x * b.z + a.y * b.w;
     result.z = + a.y * b.x - a.x * b.y + a.w * b.z + a.z * b.w;
-    result.w = - a.x * b.x - a.y * b.y - a.z * b.z + a.w * b.w;
+    result.w = - a.x * b.x - a.y * b.y - a.z * b.z + a.w * b.w;  // a.w * b.w - dot(a, b)
 
     return result;
 }
@@ -241,42 +244,47 @@ inline TQuat QuatSqrt(TQuat q)
     return norm_safe(q);  // https://maxime-tournier.github.io/notes/quaternions.html#fast-square-root
 }
 
+inline TQuat QuatSqr(TQuat q)
+{
+    return { 2 * xyz(q) * q.w, sqr(q.w) - sqrlen(xyz(q)) };  // cross term drops out.
+}
+
 inline TQuat Log(const TQuat& q)
 {
     TElt qLen = len(q);
-    TElt s = len(q.AsVec3());
+    TElt s = len(xyz(q));
     TElt c = q.w;
-    return TQuat((std::atan2(s, c) / (s + TElt(1e-8))) * q.AsVec3(), std::log(qLen));
+    return TQuat((std::atan2(s, c) / (s + TElt(1e-8))) * xyz(q), std::log(qLen));
 }
 
 inline TQuat Exp(const TQuat& q)
 {
-    TElt theta = len(q.AsVec3());
-    return std::exp(q.w) * TQuat(q.AsVec3() * (std::sin(theta) / (theta + vlf_eps)), std::cos(theta));
+    TElt theta = len(xyz(q));
+    return std::exp(q.w) * TQuat(xyz(q) * (std::sin(theta) / (theta + vlf_eps)), std::cos(theta));
 }
 
 inline TQuat LogUnit(const TQuat& q)
 {
     VL_ASSERT(vl_is_unit(q));
-    TElt s = len(q.AsVec3());
+    TElt s = len(xyz(q));
     TElt c = q.w;
-    return TQuat((std::atan2(s, c) / (s + TElt(1e-8))) * q.AsVec3(), 0);
+    return TQuat((std::atan2(s, c) / (s + TElt(1e-8))) * xyz(q), 0);
 }
 
 inline TQuat ExpUnit(const TQuat& q)
 {
     VL_ASSERT(abs(q.w) < TElt(1e-8));
 
-    TElt theta = len(q.AsVec3());
-    return TQuat(q.AsVec3() * (std::sin(theta) / (theta + TElt(1e-8))), std::cos(theta));
+    TElt theta = len(xyz(q));
+    return TQuat(xyz(q) * (std::sin(theta) / (theta + TElt(1e-8))), std::cos(theta));
 }
 
 inline TVec3 LogUnit3(const TQuat& q)
 {
     VL_ASSERT(vl_is_unit(q));
-    TElt s = len(q.AsVec3());
+    TElt s = len(xyz(q));
     TElt c = q.w;
-    return (std::atan2(s, c) / (s + TElt(1e-8))) * q.AsVec3();
+    return (std::atan2(s, c) / (s + TElt(1e-8))) * xyz(q);
 }
 
 inline TQuat ExpUnit3(const TVec3& lq)
