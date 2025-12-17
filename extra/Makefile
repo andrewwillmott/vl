@@ -44,6 +44,7 @@ vl234f:
 	@sed $(VL234F_SUBS) ../include/VL/Mat2.hpp      >> VL234f.hpp
 	@sed $(VL234F_SUBS) ../include/VL/Mat3.hpp      >> VL234f.hpp
 	@sed $(VL234F_SUBS) ../include/VL/Mat4.hpp      >> VL234f.hpp
+	@sed $(VL234F_SUBS) ../include/VL/Swizzle.hpp   >> VL234f.hpp
 	@sed $(VL234F_SUBS) ../include/VL/Quat.hpp      >> VL234f.hpp
 	@sed $(VL234F_SUBS) ../include/VL/Transform.hpp >> VL234f.hpp
 	@echo "\n#include <iostream>"                   >> VL234f.hpp
@@ -76,6 +77,7 @@ vl234i:
 	@sed $(VL234I_SUBS) ../include/VL/Vec2.hpp      >> VL234i.hpp
 	@sed $(VL234I_SUBS) ../include/VL/Vec3.hpp      >> VL234i.hpp
 	@sed $(VL234I_SUBS) ../include/VL/Vec4.hpp      >> VL234i.hpp
+	@sed $(VL234I_SUBS) ../include/VL/Swizzle.hpp   >> VL234i.hpp
 #	@echo "\n#include <iostream>"                   >> VL234i.hpp
 #	@sed $(VL234I_SUBS) ../include/VL/Stream234.hpp >> VL234i.hpp
 	@echo "\n#endif"                                >> VL234i.hpp

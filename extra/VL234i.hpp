@@ -1605,4 +1605,65 @@ inline Vec4i abs(const Vec4i& v)
 
 #endif
 
+#ifndef VL_SWIZZLE_H
+#define VL_SWIZZLE_H
+
+// Vec3->Vec2
+const Vec2i& xy(const Vec3i& v);
+      Vec2i& xy(      Vec3i& v);
+const Vec2i  yz(const Vec3i& v);
+const Vec2i  xz(const Vec3i& v);
+
+// Vec4->Vec2
+const Vec2i& xy(const Vec4i& v);
+      Vec2i& xy(      Vec4i& v);
+const Vec2i  yz(const Vec4i& v);
+const Vec2i  zw(const Vec4i& v);
+
+const Vec2i  xw(const Vec4i& v);
+const Vec2i  yw(const Vec4i& v);
+const Vec2i  zw(const Vec4i& v);
+
+// Vec4->Vec3
+const Vec3i& xyz(const Vec4i& v);
+      Vec3i& xyz(      Vec4i& v);
+const Vec3i  xyw(const Vec4i& v);
+const Vec3i  yzw(const Vec4i& v);
+const Vec3i  xzw(const Vec4i& v);
+
+// Reversal
+const Vec2i reverse(const Vec2i& v);
+const Vec3i reverse(const Vec3i& v);
+const Vec4i reverse(const Vec4i& v);
+
+
+// --- Inlines ----------------------------------------------------------------
+
+inline const Vec2i& xy(const Vec3i& v) { return (const Vec2i&) v; }
+inline       Vec2i& xy(      Vec3i& v) { return (      Vec2i&) v; }
+
+inline const Vec2i  yz(const Vec3i& v) { return Vec2i(v.y, v.z); }
+inline const Vec2i  xz(const Vec3i& v) { return Vec2i(v.x, v.z); }
+
+inline const Vec2i& xy(const Vec4i& v) { return (const Vec2i&) v; }
+inline       Vec2i& xy(      Vec4i& v) { return (      Vec2i&) v; }
+
+inline const Vec2i  yz(const Vec4i& v) { return Vec2i(v.y, v.z); }
+inline const Vec2i  xw(const Vec4i& v) { return Vec2i(v.x, v.w); }
+inline const Vec2i  yw(const Vec4i& v) { return Vec2i(v.y, v.w); }
+inline const Vec2i  zw(const Vec4i& v) { return Vec2i(v.z, v.w); }
+
+inline const Vec3i& xyz(const Vec4i& v) { return (const Vec3i&) v; }
+inline       Vec3i& xyz(      Vec4i& v) { return (      Vec3i&) v; }
+
+inline const Vec3i  xyw(const Vec4i& v) { return Vec3i(v.x, v.y, v.w); }
+inline const Vec3i  yzw(const Vec4i& v) { return Vec3i(v.y, v.z, v.w); }
+inline const Vec3i  xzw(const Vec4i& v) { return Vec3i(v.x, v.z, v.w); }
+
+inline const Vec2i reverse(const Vec2i& v) { return Vec2i(v.y, v.x); }
+inline const Vec3i reverse(const Vec3i& v) { return Vec3i(v.z, v.y, v.x); }
+inline const Vec4i reverse(const Vec4i& v) { return Vec4i(v.w, v.z, v.y, v.x); }
+
+#endif
+
 #endif
