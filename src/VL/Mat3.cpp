@@ -195,6 +195,7 @@ TElt det(const TMat3& m)
     return dot(m.x, cross(m.y, m.z));
 }
 
+#ifndef VL_NO_REAL
 TMat3 inv(const TMat3& m)
 {
     TElt  det;
@@ -211,6 +212,7 @@ TMat3 inv(const TMat3& m)
 
     return result;
 }
+#endif
 
 TMat3 abs(const TMat3& m)
 {

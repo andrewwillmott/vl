@@ -25,6 +25,7 @@ TElt det(const TMat2& m)
     return m.x.x * m.y.y - m.x.y * m.y.x;
 }
 
+#ifndef VL_NO_REAL
 TMat2 inv(const TMat2& m)
 {
     TElt  det;
@@ -39,6 +40,7 @@ TMat2 inv(const TMat2& m)
 
     return result;
 }
+#endif
 
 TMat2 abs(const TMat2& m)
 {

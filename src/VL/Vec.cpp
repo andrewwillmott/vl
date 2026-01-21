@@ -156,6 +156,24 @@ TVec::TVec(int n, double elt0, ...) : TRefVec(n, VL_NEW TElt[n])
     va_end(ap);
 }
 
+TVec::TVec(int n, int elt0, ...) : TRefVec(n, VL_NEW TElt[n])
+{
+    VL_ASSERT_MSG(data != 0, "(Vec) Out of memory");
+    VL_ASSERT_MSG(n > 0,"(Vec) illegal vector size");
+
+    va_list ap;
+
+    va_start(ap, elt0);
+
+    data[0] = TElt(elt0);
+
+    int i = 1;
+    while (--n)
+        data[i++] = TElt(va_arg(ap, int));
+
+    va_end(ap);
+}
+
 TVec::TVec(std::initializer_list<TElt> l) : TRefVec(int(l.size()), VL_NEW TElt[l.size()])
 {
     std::initializer_list<TElt>::const_iterator it = l.begin();
@@ -175,7 +193,7 @@ TVec::TVec(TConstRefVec v) : TRefVec(v.elts, VL_NEW TElt[v.elts])
 TVec::TVec(TConstSliceVec v) : TRefVec(v.elts, VL_NEW TElt[v.elts])
 {
     VL_ASSERT_MSG(data != 0, "(Mat) Out of memory");
-    
+
     for (int i = 0; i < elts; i++)
         (*this)[i] = v[i];
 }
@@ -192,7 +210,7 @@ TVec& TVec::operator = (const TVec& v)
         for (int i = 0; i < elts; i++)
             data[i] = v.data[i];
     }
-    
+
     return *this;
 }
 
@@ -287,7 +305,7 @@ TConstVec::TConstVec(TConstRefVec v) : TConstRefVec(v.elts, VL_NEW TElt[v.elts])
 TConstVec::TConstVec(TConstSliceVec v) : TConstRefVec(v.elts, VL_NEW TElt[v.elts])
 {
     VL_ASSERT_MSG(data != 0, "(Mat) Out of memory");
-    
+
     TRefVec& self = (TRefVec&) *this;
     for (int i = 0; i < elts; i++)
         self[i] = v[i];

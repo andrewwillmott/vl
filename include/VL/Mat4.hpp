@@ -111,7 +111,9 @@ TMat4  trans(const TMat4& m);                  // Transpose
 TElt   trace(const TMat4& m);                  // Trace
 TMat4  adj  (const TMat4& m);                  // Adjoint
 TElt   det  (const TMat4& m);                  // Determinant
+#ifndef VL_NO_REAL
 TMat4  inv  (const TMat4& m);                  // Inverse
+#endif
 TMat4  abs  (const TMat4& m);                  // abs(m_ij)
 TMat4  oprod(const TVec4& a, const TVec4& b);  // Outer product
 

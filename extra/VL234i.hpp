@@ -59,6 +59,8 @@
 #ifndef VL_CXX_11
     #define VL_CXX_11 __cplusplus >= 201103L
 #endif
+#define VL_NO_REAL
+#define VL_PRINT_INT
 
 #ifndef VL_CONSTANTS_H
 #define VL_CONSTANTS_H
@@ -209,8 +211,8 @@ template<class T> inline T vl_clamp_upper(T x, T max)
 
 #endif
 
-#ifndef VL_VEC2_H
-#define VL_VEC2_H
+#ifndef VLI_VEC2_H
+#define VLI_VEC2_H
 
 
 // --- Vec2 Class -------------------------------------------------------------
@@ -646,8 +648,8 @@ inline bool Vec2i::operator >= (const Vec2i& a) const
 
 #endif
 
-#ifndef VL_VEC3_H
-#define VL_VEC3_H
+#ifndef VLI_VEC3_H
+#define VLI_VEC3_H
 
 
 // --- Vec3 Class -------------------------------------------------------------
@@ -1144,8 +1146,8 @@ inline Vec3i abs(const Vec3i& v)
 
 #endif
 
-#ifndef VL_VEC4_H
-#define VL_VEC4_H
+#ifndef VLI_VEC4_H
+#define VLI_VEC4_H
 
 
 // --- Vec4 Class -------------------------------------------------------------
@@ -1605,8 +1607,1043 @@ inline Vec4i abs(const Vec4i& v)
 
 #endif
 
-#ifndef VL_SWIZZLE_H
-#define VL_SWIZZLE_H
+#ifndef VLI_MAT2_H
+#define VLI_MAT2_H
+
+
+
+// --- Mat2 Class -------------------------------------------------------------
+
+class Mat2i : public VLMatType
+{
+public:
+    typedef Vec2i Vec;
+
+    // Constructors
+    Mat2i();
+    Mat2i(int a, int b, int c, int d);
+    Mat2i(const Vec2i v0, const Vec2i v1);
+    Mat2i(const Mat2i& m);
+
+    Mat2i(Vec2i diagonal);
+    Mat2i(VLDiag k);
+    Mat2i(VLBlock k);
+
+    explicit Mat2i(const int m[4]);
+
+    template<class T, class U = typename T::IsMat> explicit Mat2i(const T& v);
+
+    // Accessor functions
+    int          Elts() const { return 4; };
+    int          Rows() const { return 2; };
+    int          Cols() const { return 2; };
+
+    Vec2i&       operator [] (int i);
+    const Vec2i& operator [] (int i) const;
+
+    int&        operator () (int i, int j);
+    int         operator () (int i, int j) const;
+
+    int*        Ref();
+    const int*  Ref() const;
+
+    // Assignment operators
+    Mat2i&       operator =  (const Mat2i& m);
+    Mat2i&       operator =  (VLDiag k);
+    Mat2i&       operator =  (VLBlock k);
+
+    template<class T, class U = typename T::IsMat> Mat2i& operator = (const T& m);
+
+    Mat2i&       operator += (const Mat2i& m);
+    Mat2i&       operator -= (const Mat2i& m);
+    Mat2i&       operator *= (const Mat2i& m);
+    Mat2i&       operator *= (int s);
+    Mat2i&       operator /= (int s);
+
+    // Comparison operators
+    bool         operator == (const Mat2i& m) const; // M == N?
+    bool         operator != (const Mat2i& m) const; // M != N?
+
+    // Arithmetic operators
+    Mat2i        operator + (const Mat2i& m) const;  // M + N
+    Mat2i        operator - (const Mat2i& m) const;  // M - N
+    const Mat2i& operator + () const;                // +M
+    Mat2i        operator - () const;                // -M
+    Mat2i        operator * (const Mat2i& m) const;  // M * N
+    Mat2i        operator * (int s) const;          // M * s
+    Mat2i        operator / (int s) const;          // M / s
+
+    // Initialisers
+    void         MakeZero();                         // Zero matrix
+    void         MakeIdentity();                     // Identity matrix
+    void         MakeDiag (Vec2i d);                 // Diagonal = d, 0 otherwise
+    void         MakeDiag (int k = vl_one);         // Diagonal = k, 0 otherwise
+    void         MakeBlock(int k = vl_one);         // all elts = k
+
+    // Data
+    Vec2i x;
+    Vec2i y;
+};
+
+
+// --- Matrix operators -------------------------------------------------------
+
+Vec2i& operator *= (Vec2i& v, const Mat2i& m);        // v *= m
+Vec2i  operator *  (const Mat2i& m, const Vec2i& v);  // m * v
+Vec2i  operator *  (const Vec2i& v, const Mat2i& m);  // v * m
+Mat2i  operator *  (const int   s, const Mat2i& m);  // s * m
+
+Vec2i  row(const Mat2i& m, int i);             // Return row i of 'm' (same as m[i])
+Vec2i  col(const Mat2i& m, int j);             // Return column i of 'm'
+
+Mat2i  trans(const Mat2i& m);                  // Transpose
+int   trace(const Mat2i& m);                  // Trace
+Mat2i  adj  (const Mat2i& m);                  // Adjoint
+int   det  (const Mat2i& m);                  // Determinant
+#ifndef VL_NO_REAL
+Mat2i  inv  (const Mat2i& m);                  // Inverse
+#endif
+Mat2i  abs  (const Mat2i& m);                  // abs(m_ij)
+Mat2i  oprod(const Vec2i& a, const Vec2i& b);  // Outer product
+
+// The xform functions help avoid dependence on whether row or column
+// vectors are used to represent points and vectors.
+Vec2i  xform(const Mat2i& m, const Vec2i& v);  // Transform of v by m
+Mat2i  xform(const Mat2i& m, const Mat2i& n);  // Xform v -> m(n(v))
+
+
+// --- Inlines ----------------------------------------------------------------
+
+
+inline Mat2i::Mat2i()
+{
+}
+
+inline Mat2i::Mat2i(int a, int b, int c, int d) :
+    x(a, b),
+    y(c, d)
+{
+}
+
+inline Mat2i::Mat2i(Vec2i v0, Vec2i v1) :
+    x(v0),
+    y(v1)
+{
+}
+
+inline Mat2i::Mat2i(const Mat2i& m) :
+    x(m.x),
+    y(m.y)
+{
+}
+
+inline Mat2i::Mat2i(Vec2i diag)
+{
+    MakeDiag(diag);
+}
+
+inline Mat2i::Mat2i(VLDiag k)
+{
+    MakeDiag(int(k));
+}
+
+inline Mat2i::Mat2i(VLBlock k)
+{
+    MakeBlock(int(k));
+}
+
+inline Mat2i::Mat2i(const int m[4])
+{
+    int* elts = (int*) this;
+    for (int i = 0; i < 4; i++)
+        *elts++ = *m++;
+}
+
+template<class T, class U> inline Mat2i::Mat2i(const T& m)
+{
+    VL_ASSERT_MSG(m.Rows() == Rows() || m.Rows() == VL_REPEAT, "(Mat2) Matrix rows don't match");
+
+    for (int i = 0; i < Rows(); i++)
+        (*this)[i] = m[i];
+}
+
+inline Vec2i& Mat2i::operator [] (int i)
+{
+    VL_RANGE_MSG(i, 0, 2, "(Mat2::[i]) index out of range");
+    return (&x)[i];
+}
+
+inline const Vec2i& Mat2i::operator [] (int i) const
+{
+    VL_RANGE_MSG(i, 0, 2, "(Mat2::[i]) index out of range");
+    return (&x)[i];
+}
+
+inline int& Mat2i::operator () (int i, int j)
+{
+    VL_RANGE_MSG(i, 0, 2, "(Mat2::(i,j)) index out of range");
+    VL_RANGE_MSG(j, 0, 2, "(Mat2::(i,j)) index out of range");
+
+    return (&x)[i][j];
+}
+
+inline int Mat2i::operator () (int i, int j) const
+{
+    VL_RANGE_MSG(i, 0, 2, "(Mat2::(i,j)) index out of range");
+    VL_RANGE_MSG(j, 0, 2, "(Mat2::(i,j)) index out of range");
+
+    return (&x)[i][j];
+}
+
+inline int* Mat2i::Ref()
+{
+    return &x.x;
+}
+
+inline const int* Mat2i::Ref() const
+{
+    return &x.x;
+}
+
+inline void Mat2i::MakeZero()
+{
+    x.x = vl_zero; x.y = vl_zero;
+    y.x = vl_zero; y.y = vl_zero;
+}
+
+inline void Mat2i::MakeDiag(int k)
+{
+    x.x = k;          x.y = vl_zero;
+    y.x = vl_zero;    y.y = k;
+}
+
+inline void Mat2i::MakeDiag(Vec2i d)
+{
+    x.x = d.x;        x.y = vl_zero;
+    y.x = vl_zero;    y.y = d.y;
+}
+
+inline void Mat2i::MakeIdentity()
+{
+    x.x = vl_one;     x.y = vl_zero;
+    y.x = vl_zero;    y.y = vl_one;
+}
+
+inline void Mat2i::MakeBlock(int k)
+{
+    x.x = k; x.y = k;
+    y.x = k; y.y = k;
+}
+
+inline Mat2i& Mat2i::operator = (VLDiag k)
+{
+    MakeDiag(int(k));
+    return *this;
+}
+
+inline Mat2i& Mat2i::operator = (VLBlock k)
+{
+    MakeBlock(int(k));
+    return *this;
+}
+
+inline Mat2i& Mat2i::operator = (const Mat2i& m)
+{
+    x = m.x;
+    y = m.y;
+
+    return *this;
+}
+
+template<class T, class U> inline Mat2i& Mat2i::operator = (const T& m)
+{
+    VL_ASSERT_MSG(m.Rows() == Rows() || m.Rows() == VL_REPEAT, "(Mat2::=) Matrix rows don't match");
+
+    for (int i = 0; i < Rows(); i++)
+        (*this)[i] = m[i];
+
+    return *this;
+}
+
+inline Mat2i& Mat2i::operator += (const Mat2i& m)
+{
+    x += m.x;
+    y += m.y;
+
+    return *this;
+}
+
+inline Mat2i& Mat2i::operator -= (const Mat2i& m)
+{
+    x -= m.x;
+    y -= m.y;
+
+    return *this;
+}
+
+inline Mat2i& Mat2i::operator *= (const Mat2i& m)
+{
+    Vec2i t;
+
+    t = x.x * m.x + x.y * m.y;
+    y = y.x * m.x + y.y * m.y;
+    x = t;
+
+    return *this;
+}
+
+inline Mat2i& Mat2i::operator *= (int s)
+{
+    x *= s;
+    y *= s;
+
+    return *this;
+}
+
+inline Mat2i& Mat2i::operator /= (int s)
+{
+    x /= s;
+    y /= s;
+
+    return *this;
+}
+
+
+inline Mat2i Mat2i::operator + (const Mat2i& m) const
+{
+    Mat2i result;
+
+    result.x = x + m.x;
+    result.y = y + m.y;
+
+    return result;
+}
+
+inline Mat2i Mat2i::operator - (const Mat2i& m) const
+{
+    Mat2i result;
+
+    result.x = x - m.x;
+    result.y = y - m.y;
+
+    return result;
+}
+
+inline const Mat2i& Mat2i::operator + () const
+{
+    return *this;
+}
+
+inline Mat2i Mat2i::operator - () const
+{
+    Mat2i result;
+
+    result.x = -x;
+    result.y = -y;
+
+    return result;
+}
+
+inline Mat2i Mat2i::operator * (const Mat2i& m) const
+{
+    Mat2i result;
+
+    result.x.x = x.x * m.x.x + x.y * m.y.x;
+    result.x.y = x.x * m.x.y + x.y * m.y.y;
+    result.y.x = y.x * m.x.x + y.y * m.y.x;
+    result.y.y = y.x * m.x.y + y.y * m.y.y;
+
+    return result;
+}
+
+inline Mat2i Mat2i::operator * (int s) const
+{
+    Mat2i result;
+
+    result.x = x * s;
+    result.y = y * s;
+
+    return result;
+}
+
+inline Mat2i Mat2i::operator / (int s) const
+{
+    Mat2i result;
+
+    result.x = x / s;
+    result.y = y / s;
+
+    return result;
+}
+
+inline Mat2i  operator *  (int s, const Mat2i& m)
+{
+    return m * s;
+}
+
+inline Vec2i operator * (const Mat2i& m, const Vec2i& v)
+{
+    Vec2i result;
+
+    result.x = m.x.x * v.x + m.x.y * v.y;
+    result.y = m.y.x * v.x + m.y.y * v.y;
+
+    return result;
+}
+
+inline Vec2i operator * (const Vec2i& v, const Mat2i& m)
+{
+    Vec2i result;
+
+    result.x = v.x * m.x.x + v.y * m.y.x;
+    result.y = v.x * m.x.y + v.y * m.y.y;
+
+    return result;
+}
+
+inline Vec2i& operator *= (Vec2i& v, const Mat2i& m)
+{
+    int t;
+
+    t   = v.x * m.x.x + v.y * m.y.x;
+    v.y = v.x * m.x.y + v.y * m.y.y;
+    v.x = t;
+
+    return v;
+}
+
+
+inline Vec2i row(const Mat2i& m, int i)
+{
+    VL_INDEX(i, 2);
+    return Vec2i(*(&m.x + i));
+}
+
+inline Vec2i col(const Mat2i& m, int j)
+{
+    VL_INDEX(j, 2);
+    return Vec2i(m.x[j], m.y[j]);
+}
+
+inline Mat2i trans(const Mat2i& m)
+{
+    Mat2i result;
+
+    result.x.x = m.x.x; result.x.y = m.y.x;
+    result.y.x = m.x.y; result.y.y = m.y.y;
+
+    return result;
+}
+
+inline int trace(const Mat2i& m)
+{
+    return m.x.x + m.y.y;
+}
+
+inline Mat2i adj(const Mat2i& m)
+{
+    Mat2i result;
+
+    result.x = -cross(m.y);
+    result.y =  cross(m.x);
+
+    return result;
+}
+
+#endif
+
+#ifndef VLI_MAT3_H
+#define VLI_MAT3_H
+
+
+
+// --- Mat3 Class -------------------------------------------------------------
+
+class Vec4i;
+
+class Mat3i : public VLMatType
+{
+public:
+    typedef Vec3i Vec;
+
+    // Constructors
+    Mat3i();
+    Mat3i(int a, int b, int c,
+          int d, int e, int f,
+          int g, int h, int i);
+    Mat3i(Vec3i v0, Vec3i v1, Vec3i v2);
+    Mat3i(const Mat3i& m);
+
+    Mat3i(Vec3i diagonal);
+    Mat3i(VLDiag k);
+    Mat3i(VLBlock k);
+
+    explicit Mat3i(const Mat2i& m, int scale = int(vl_1));
+    explicit Mat3i(const int m[9]);
+
+    template<class T, class U = typename T::IsMat> explicit Mat3i(const T& v);
+
+    // Accessor functions
+    int          Elts() const { return 9; };
+    int          Rows() const { return 3; };
+    int          Cols() const { return 3; };
+
+    Vec3i&       operator [] (int i);
+    const Vec3i& operator [] (int i) const;
+
+    int&        operator () (int i, int j);
+    int         operator () (int i, int j) const;
+
+    int*        Ref();
+    const int*  Ref() const;
+
+    // Assignment operators
+    Mat3i&       operator =  (const Mat3i& m);
+    Mat3i&       operator =  (VLDiag k);
+    Mat3i&       operator =  (VLBlock k);
+
+    template<class T, class U = typename T::IsMat> Mat3i& operator = (const T& m);
+
+    Mat3i&       operator += (const Mat3i& m);
+    Mat3i&       operator -= (const Mat3i& m);
+    Mat3i&       operator *= (const Mat3i& m);
+    Mat3i&       operator *= (int s);
+    Mat3i&       operator /= (int s);
+
+    // Comparison operators
+    bool         operator == (const Mat3i& m) const; // M == N?
+    bool         operator != (const Mat3i& m) const; // M != N?
+
+    // Arithmetic operators
+    Mat3i        operator + (const Mat3i& m) const;  // M + N
+    Mat3i        operator - (const Mat3i& m) const;  // M - N
+    const Mat3i& operator + () const;                // +M
+    Mat3i        operator - () const;                // -M
+    Mat3i        operator * (const Mat3i& m) const;  // M * N
+    Mat3i        operator * (int s) const;          // M * s
+    Mat3i        operator / (int s) const;          // M / s
+
+    // Initialisers
+    void         MakeZero();                         // Zero matrix
+    void         MakeIdentity();                     // Identity matrix
+    void         MakeDiag (Vec3i d);                 // Diagonal = d, 0 otherwise
+    void         MakeDiag (int k = vl_one);         // Diagonal = k, 0 otherwise
+    void         MakeBlock(int k = vl_one);         // all elts = k
+
+    // Conversion
+    Mat2i        AsMat2() const;
+
+    // Data
+    Vec3i x;
+    Vec3i y;
+    Vec3i z;
+};
+
+
+// --- Matrix operators -------------------------------------------------------
+
+Vec3i& operator *= (Vec3i& v, const Mat3i& m);        // v *= m
+Vec3i  operator *  (const Mat3i& m, const Vec3i& v);  // m * v
+Vec3i  operator *  (const Vec3i& v, const Mat3i& m);  // v * m
+Mat3i  operator *  (const int   s, const Mat3i& m);  // s * m
+
+Vec3i  row(const Mat3i& m, int i);             // Return row i of 'm' (same as m[i])
+Vec3i  col(const Mat3i& m, int j);             // Return column i of 'm'
+
+Mat3i  trans(const Mat3i& m);                  // Transpose
+int   trace(const Mat3i& m);                  // Trace
+Mat3i  adj  (const Mat3i& m);                  // Adjoint
+int   det  (const Mat3i& m);                  // Determinant
+#ifndef VL_NO_REAL
+Mat3i  inv  (const Mat3i& m);                  // Inverse
+#endif
+Mat3i  abs  (const Mat3i& m);                  // abs(m_ij)
+Mat3i  oprod(const Vec3i& a, const Vec3i& b);  // Outer product
+
+// The xform functions help avoid dependence on whether row or column
+// vectors are used to represent points and vectors.
+Vec3i  xform(const Mat3i& m, const Vec3i& v);  // Transform of v by m
+Vec2i  xform(const Mat3i& m, const Vec2i& v);  // Hom. xform of v by m
+Mat3i  xform(const Mat3i& m, const Mat3i& n);  // Xform v -> m(n(v))
+
+
+// --- Inlines ----------------------------------------------------------------
+
+inline Mat3i::Mat3i()
+{
+}
+
+inline Mat3i::Mat3i
+(
+    int a, int b, int c,
+    int d, int e, int f,
+    int g, int h, int i
+) :
+    x(a, b, c),
+    y(d, e, f),
+    z(g, h, i)
+{
+}
+
+inline Mat3i::Mat3i(Vec3i v0, Vec3i v1, Vec3i v2) :
+    x(v0),
+    y(v1),
+    z(v2)
+{
+}
+
+inline Mat3i::Mat3i(const Mat3i& m) :
+    x(m.x),
+    y(m.y),
+    z(m.z)
+{
+}
+
+inline Mat3i::Mat3i(Vec3i d)
+{
+    MakeDiag(d);
+}
+
+inline Mat3i::Mat3i(VLDiag k)
+{
+    MakeDiag(int(k));
+}
+
+inline Mat3i::Mat3i(VLBlock k)
+{
+    MakeBlock(int(k));
+}
+
+inline Mat3i::Mat3i(const int m[9])
+{
+    int* elts = (int*) this;
+    for (int i = 0; i < 9; i++)
+        *elts++ = *m++;
+}
+
+template<class T, class U> inline Mat3i::Mat3i(const T& m)
+{
+    VL_ASSERT_MSG(m.Rows() == Rows() || m.Rows() == VL_REPEAT, "(Mat3) Matrix rows don't match");
+
+    for (int i = 0; i < Rows(); i++)
+        (*this)[i] = m[i];
+}
+
+inline Vec3i& Mat3i::operator [] (int i)
+{
+    VL_RANGE_MSG(i, 0, 3, "(Mat3::[i]) index out of range");
+    return (&x)[i];
+}
+
+inline const Vec3i& Mat3i::operator [] (int i) const
+{
+    VL_RANGE_MSG(i, 0, 3, "(Mat3::[i]) index out of range");
+    return (&x)[i];
+}
+
+inline int& Mat3i::operator () (int i, int j)
+{
+    VL_RANGE_MSG(i, 0, 3, "(Mat2::(i,j)) index out of range");
+    VL_RANGE_MSG(j, 0, 3, "(Mat2::(i,j)) index out of range");
+
+    return (&x)[i][j];
+}
+
+inline int Mat3i::operator () (int i, int j) const
+{
+    VL_RANGE_MSG(i, 0, 3, "(Mat2::(i,j)) index out of range");
+    VL_RANGE_MSG(j, 0, 3, "(Mat2::(i,j)) index out of range");
+
+    return (&x)[i][j];
+}
+
+inline int* Mat3i::Ref()
+{
+    return &x.x;
+}
+
+inline const int* Mat3i::Ref() const
+{
+    return &x.x;
+}
+
+inline void Mat3i::MakeZero()
+{
+    x.x = vl_zero; x.y = vl_zero; x.z = vl_zero;
+    y.x = vl_zero; y.y = vl_zero; y.z = vl_zero;
+    z.x = vl_zero; z.y = vl_zero; z.z = vl_zero;
+}
+
+inline void Mat3i::MakeIdentity()
+{
+    x.x = vl_one;     x.y = vl_zero;    x.z = vl_zero;
+    y.x = vl_zero;    y.y = vl_one;     y.z = vl_zero;
+    z.x = vl_zero;    z.y = vl_zero;    z.z = vl_one;
+}
+
+inline void Mat3i::MakeDiag(Vec3i d)
+{
+    x.x = d.x;        x.y = vl_zero;    x.z = vl_zero;
+    y.x = vl_zero;    y.y = d.y;        y.z = vl_zero;
+    z.x = vl_zero;    z.y = vl_zero;    z.z = d.z;
+}
+
+inline void Mat3i::MakeDiag(int k)
+{
+    x.x = k;          x.y = vl_zero;    x.z = vl_zero;
+    y.x = vl_zero;    y.y = k;          y.z = vl_zero;
+    z.x = vl_zero;    z.y = vl_zero;    z.z = k;
+}
+
+inline void Mat3i::MakeBlock(int k)
+{
+    x.x = k; x.y = k; x.z = k;
+    y.x = k; y.y = k; y.z = k;
+    z.x = k; z.y = k; z.z = k;
+}
+
+inline Mat2i Mat3i::AsMat2() const
+{
+    return Mat2i(x.AsVec2(), y.AsVec2());
+}
+
+inline Mat3i& Mat3i::operator = (VLDiag k)
+{
+    MakeDiag(int(k));
+    return *this;
+}
+
+inline Mat3i& Mat3i::operator = (VLBlock k)
+{
+    MakeBlock(int(k));
+    return *this;
+}
+
+template<class T, class U> inline Mat3i& Mat3i::operator = (const T& m)
+{
+   VL_ASSERT_MSG(m.Rows() == Rows()|| m.Rows() == VL_REPEAT, "(Mat3::=) Matrix rows don't match");
+
+   for (int i = 0; i < Rows(); i++)
+       (*this)[i] = m[i];
+
+   return *this;
+}
+
+inline const Mat3i& Mat3i::operator + () const
+{
+    return *this;
+}
+
+inline Mat3i operator *  (const int s, const Mat3i& m)
+{
+    return m * s;
+}
+
+inline Vec3i operator * (const Mat3i& m, const Vec3i& v)
+{
+    Vec3i result;
+
+    result.x = v.x * m.x.x + v.y * m.x.y + v.z * m.x.z;
+    result.y = v.x * m.y.x + v.y * m.y.y + v.z * m.y.z;
+    result.z = v.x * m.z.x + v.y * m.z.y + v.z * m.z.z;
+
+    return result;
+}
+
+inline Vec3i operator * (const Vec3i& v, const Mat3i& m)
+{
+    Vec3i result;
+
+    result.x = v.x * m.x.x + v.y * m.y.x + v.z * m.z.x;
+    result.y = v.x * m.x.y + v.y * m.y.y + v.z * m.z.y;
+    result.z = v.x * m.x.z + v.y * m.y.z + v.z * m.z.z;
+
+    return result;
+}
+
+inline Vec3i& operator *= (Vec3i& v, const Mat3i& m)
+{
+    int t0, t1;
+
+    t0  = v.x * m.x.x + v.y * m.y.x + v.z * m.z.x;
+    t1  = v.x * m.x.y + v.y * m.y.y + v.z * m.z.y;
+    v.z = v.x * m.x.z + v.y * m.y.z + v.z * m.z.z;
+    v.x = t0;
+    v.y = t1;
+
+    return v;
+}
+
+inline Vec3i row(const Mat3i& m, int i)
+{
+    VL_INDEX(i, 3);
+    return Vec3i(*(&m.x + i));
+}
+
+inline Vec3i col(const Mat3i& m, int j)
+{
+    VL_INDEX(j, 3);
+    return Vec3i(m.x[j], m.y[j], m.z[j]);
+}
+
+#endif
+
+
+#ifndef VLI_MAT4_H
+#define VLI_MAT4_H
+
+
+
+// --- Mat4 Class -------------------------------------------------------------
+
+class Vec3i;
+
+class Mat4i : public VLMatType
+{
+public:
+    typedef Vec4i Vec;
+
+    // Constructors
+    Mat4i();
+    Mat4i(int a, int b, int c, int d,
+          int e, int f, int g, int h,
+          int i, int j, int k, int l,
+          int m, int n, int o, int p);
+    Mat4i(Vec4i v0, Vec4i v1, Vec4i v2, Vec4i v3);
+    Mat4i(const Mat4i& m);
+
+    Mat4i(Vec4i diagonal);
+    Mat4i(VLDiag k);
+    Mat4i(VLBlock k);
+
+    explicit Mat4i(const Mat3i& m, int scale = int(vl_1));
+    explicit Mat4i(const int data[16]);
+
+    template<class T, class U = typename T::IsMat> explicit Mat4i(const T& v);
+
+    // Accessor functions
+    int          Elts() const { return 16; };
+    int          Rows() const { return  4; };
+    int          Cols() const { return  4; };
+
+    Vec4i&       operator [] (int i);
+    const Vec4i& operator [] (int i) const;
+
+    int&        operator () (int i, int j);
+    int         operator () (int i, int j) const;
+
+    int*        Ref();
+    const int*  Ref() const;
+
+    // Assignment operators
+    Mat4i&       operator =  (const Mat4i& m);
+    Mat4i&       operator =  (VLDiag k);
+    Mat4i&       operator =  (VLBlock k);
+
+    template<class T, class U = typename T::IsMat> Mat4i& operator = (const T& m);
+
+    Mat4i&       operator += (const Mat4i& m);
+    Mat4i&       operator -= (const Mat4i& m);
+    Mat4i&       operator *= (const Mat4i& m);
+    Mat4i&       operator *= (int s);
+    Mat4i&       operator /= (int s);
+
+    // Comparison operators
+    bool         operator == (const Mat4i& m) const; // M == N?
+    bool         operator != (const Mat4i& m) const; // M != N?
+
+    // Arithmetic operators
+    Mat4i        operator + (const Mat4i& m) const;  // M + N
+    Mat4i        operator - (const Mat4i& m) const;  // M - N
+    const Mat4i& operator + () const;                // +M
+    Mat4i        operator - () const;                // -M
+    Mat4i        operator * (const Mat4i& m) const;  // M * N
+    Mat4i        operator * (int s) const;          // M * s
+    Mat4i        operator / (int s) const;          // M / s
+
+    // Initialisers
+    void         MakeZero();                         // Zero matrix
+    void         MakeIdentity();                     // Identity matrix
+    void         MakeDiag (Vec4i d);                 // Diagonal = d, 0 otherwise
+    void         MakeDiag (int k = vl_one);         // Diagonal = k, 0 otherwise
+    void         MakeBlock(int k = vl_one);         // All elts = k
+
+    // Conversion
+    Mat3i        AsMat3() const;
+
+    // Data
+    Vec4i x;
+    Vec4i y;
+    Vec4i z;
+    Vec4i w;
+};
+
+
+// --- Matrix operators -------------------------------------------------------
+
+Vec4i& operator *= (Vec4i& a, const Mat4i& m);        // v *= m
+Vec4i  operator *  (const Mat4i& m, const Vec4i& v);  // m * v
+Vec4i  operator *  (const Vec4i& v, const Mat4i& m);  // v * m
+Mat4i  operator *  (const int   s, const Mat4i& m);  // s * m
+
+Vec4i  row(const Mat4i& m, int i);             // Return row i of 'm' (same as m[i])
+Vec4i  col(const Mat4i& m, int j);             // Return column i of 'm'
+
+Mat4i  trans(const Mat4i& m);                  // Transpose
+int   trace(const Mat4i& m);                  // Trace
+Mat4i  adj  (const Mat4i& m);                  // Adjoint
+int   det  (const Mat4i& m);                  // Determinant
+#ifndef VL_NO_REAL
+Mat4i  inv  (const Mat4i& m);                  // Inverse
+#endif
+Mat4i  abs  (const Mat4i& m);                  // abs(m_ij)
+Mat4i  oprod(const Vec4i& a, const Vec4i& b);  // Outer product
+
+// The xform functions help avoid dependence on whether row or column
+// vectors are used to represent points and vectors.
+Vec4i  xform(const Mat4i& m, const Vec4i& v);  // Transform of v by m
+Vec3i  xform(const Mat4i& m, const Vec3i& v);  // Hom. xform of v by m
+Mat4i  xform(const Mat4i& m, const Mat4i& n);  // Xform v -> m(n(v))
+
+
+// --- Inlines ----------------------------------------------------------------
+
+inline Mat4i::Mat4i()
+{
+}
+
+inline Mat4i::Mat4i(Vec4i v0, Vec4i v1, Vec4i v2, Vec4i v3) :
+    x(v0),
+    y(v1),
+    z(v2),
+    w(v3)
+{
+}
+
+inline Mat4i::Mat4i(const Mat4i& m) :
+    x(m.x),
+    y(m.y),
+    z(m.z),
+    w(m.w)
+{
+}
+
+inline Mat4i::Mat4i(Vec4i d)
+{
+    MakeDiag(d);
+}
+
+inline Mat4i::Mat4i(VLDiag k)
+{
+    MakeDiag(int(k));
+}
+
+inline Mat4i::Mat4i(VLBlock k)
+{
+    MakeBlock(int(k));
+}
+
+inline Mat4i::Mat4i(const int m[16])
+{
+    int* elts = (int*) this;
+    for (int i = 0; i < 16; i++)
+        *elts++ = *m++;
+}
+
+template<class T, class U> inline Mat4i::Mat4i(const T& m)
+{
+    VL_ASSERT_MSG(m.Rows() == Rows() || m.Rows() == VL_REPEAT, "(Mat4) Matrix rows don't match");
+
+    for (int i = 0; i < Rows(); i++)
+        (*this)[i] = m[i];
+}
+
+inline Vec4i& Mat4i::operator [] (int i)
+{
+    VL_RANGE_MSG(i, 0, 4, "(Mat4::[i]) index out of range");
+    return (&x)[i];
+}
+
+inline const Vec4i& Mat4i::operator [] (int i) const
+{
+    VL_RANGE_MSG(i, 0, 4, "(Mat4::[i]) index out of range");
+    return (&x)[i];
+}
+
+inline int& Mat4i::operator () (int i, int j)
+{
+    VL_RANGE_MSG(i, 0, 4, "(Mat2::(i,j)) index out of range");
+    VL_RANGE_MSG(j, 0, 4, "(Mat2::(i,j)) index out of range");
+
+    return (&x)[i][j];
+}
+
+inline int Mat4i::operator () (int i, int j) const
+{
+    VL_RANGE_MSG(i, 0, 4, "(Mat2::(i,j)) index out of range");
+    VL_RANGE_MSG(j, 0, 4, "(Mat2::(i,j)) index out of range");
+
+    return (&x)[i][j];
+}
+
+inline int* Mat4i::Ref()
+{
+    return &x.x;
+}
+
+inline const int* Mat4i::Ref() const
+{
+    return &x.x;
+}
+
+inline Mat4i& Mat4i::operator = (VLDiag k)
+{
+    MakeDiag(int(k));
+    return *this;
+}
+
+inline Mat4i& Mat4i::operator = (VLBlock k)
+{
+    MakeBlock(int(k));
+    return *this;
+}
+
+template<class T, class U> inline Mat4i& Mat4i::operator = (const T& m)
+{
+    VL_ASSERT_MSG(Rows() == m.Rows() || m.Rows() == VL_REPEAT, "(Mat4::=) Matrix rows don't match");
+
+    for (int i = 0; i < Rows(); i++)
+        (*this)[i] = m[i];
+
+    return *this;
+}
+
+inline const Mat4i& Mat4i::operator + () const
+{
+    return *this;
+}
+
+inline Mat4i operator * (int s, const Mat4i& m)
+{
+    return m * s;
+}
+
+inline Vec4i row(const Mat4i& m, int i)
+{
+    VL_INDEX(i, 4);
+    return Vec4i(*(&m.x + i));
+}
+
+inline Vec4i col(const Mat4i& m, int j)
+{
+    VL_INDEX(j, 4);
+    return Vec4i(m.x[j], m.y[j], m.z[j], m.w[j]);
+}
+
+#endif
+
+#ifndef VLI_SWIZZLE_H
+#define VLI_SWIZZLE_H
 
 // Vec3->Vec2
 const Vec2i& xy(const Vec3i& v);
@@ -1665,5 +2702,360 @@ inline const Vec3i reverse(const Vec3i& v) { return Vec3i(v.z, v.y, v.x); }
 inline const Vec4i reverse(const Vec4i& v) { return Vec4i(v.w, v.z, v.y, v.x); }
 
 #endif
+
+#include <stdio.h>
+
+#ifndef VL_PRINT_BASE_H
+#define VL_PRINT_BASE_H
+
+
+
+
+// Base routines used by Print/Print234
+
+// Print according to specific format, see VL_FORMAT below
+int vl_fprintf     (FILE* file, const char* format, int n,               const int* elts, int width = 1, int precision = 3);
+int vl_fprintf     (FILE* file, const char* format, int r, int c,        const int* elts, int width = 1, int precision = 3);
+int vl_fprintf     (FILE* file, const char* format, int s, int r, int c, const int* elts, int width = 1, int precision = 3);
+
+// Print in format that can be compiled as C, 'name' is variable name.
+int vl_fprint_as_c(FILE* file, const char* name,   int n,               const int* elts, int width = 1, int precision = 3);
+int vl_fprint_as_c(FILE* file, const char* name,   int r, int c,        const int* elts, int width = 1, int precision = 3);
+int vl_fprint_as_c(FILE* file, const char* name,   int s, int r, int c, const int* elts, int width = 1, int precision = 3);
+
+// Write string according to specific format, see VL_FORMAT below. Behaviour same as unix snprintf.
+int vl_snprintf(char* str, size_t sz, const char* fmt, int n,               const int* elts, int width = 1, int precision = 3);
+int vl_snprintf(char* str, size_t sz, const char* fmt, int r, int c,        const int* elts, int width = 1, int precision = 3);
+int vl_snprintf(char* str, size_t sz, const char* fmt, int s, int r, int c, const int* elts, int width = 1, int precision = 3);
+
+// Variant that advances 'str' and reduces 'size' accordingly.
+int vl_snprintf_adv(char*& str, size_t& sz, const char* fmt, int n,               const int* elts, int width = 1, int precision = 3);
+int vl_snprintf_adv(char*& str, size_t& sz, const char* fmt, int r, int c,        const int* elts, int width = 1, int precision = 3);
+int vl_snprintf_adv(char*& str, size_t& sz, const char* fmt, int s, int r, int c, const int* elts, int width = 1, int precision = 3);
+
+int sn_adv(char*& str, size_t& size, int chars);  // Wrapper to get same behaviour from snprintf variants -- chars = sn_adv(str, sz, snprintf(str, sz, ...))
+
+#if VL_CXX_11
+// Some C++11 adapters that allow using the same '_adv' pattern as above with snprintf
+template<class... Args> int snprintf_adv   (char*& str, size_t& size, const char* fmt, Args... args);
+template<class... Args> int snprintf_append(char*  str, size_t  size, const char* fmt, Args... args);  // appends, returns size of final string
+
+// Allow direct usage with, e.g., std::string, without having to bring in the header.
+template<class S, class... Args> S& ssprintf       (S& str, const char* fmt, Args... args);
+template<class S, class... Args> S& ssprintf_append(S& str, const char* fmt, Args... args);
+template<class S, class... Args> S& ssprintf_adv   (S& str, size_t& cursor, const char* fmt, Args... args);
+
+template<class S, class... Args> S& vl_ssprintf        (S& str, const char* fmt, Args... args);
+template<class S, class... Args> S& vl_ssprintf_append (S& str, const char* fmt, Args... args);
+template<class S, class... Args> S& vl_ssprintf_adv    (S& str, size_t& cursor, const char* fmt, Args... args);
+
+// Shortcuts for fprintf(stdout, ...)
+template<class... Args> int vl_printf(Args... args);
+template<class... Args> int vl_print (Args... args);
+#endif
+
+//
+// For the 'format' argument above, you can use one of the pre-defined formats:
+//
+//   VL_FMT_VF                ->  [1.0 2.0 3.0]
+//   VL_FMT_VF_ROUND          ->  (1.0 2.0 3.0)
+//   VL_FMT_VF_COL            ->  [1.0]\n[2.0]\n[3.0]\n
+//   VL_FMT_VF_C              ->  { 1.0f, 2.0f, 3.0f }
+//   VL_FMT_VF_PY             ->  [1.0, 2.0, 3.0]
+//
+//   VL_FMT_MF                ->  [1.0 2.0]\n[3.0 4.0]\n
+//   VL_FMT_MF_INLINE         ->  [[1.0 2.0] [3.0 4.0]]
+//   VL_FMT_MF_C              ->  {\n  { 1, 2 },\n  { 3, 4 }\n}\n
+//   VL_FMT_MF_C_INLINE       ->  { { 1, 2 }, { 3, 4 } }
+//   VL_FMT_MF_PY             ->  [[1.0, 2.0],\n [3.0, 4.0]]\n
+//   VL_FMT_MF_PY_INLINE      ->  [[1.0, 2.0], [3.0, 4.0]]
+//
+// There are also '_VI' and '_MI' integer variants of these formats, e.g.,
+//
+//    vl_printf(VL_FMT_VI, Veci(...));
+//
+// For the _C formats, you can use 'D' as the type specifier, e.g., VL_FMT_VD_C,
+// to print without the 'f' suffix.
+//
+// You can also construct your own custom format with the VL_FORMAT macro:
+//
+//     VL_FORMAT(start_text, element_separator, end_text, element_format)
+//
+// For matrices the element_format is the vector format, and for vectors it's a
+// printf-style format with *.* corresponding to width/precision. E.g.,
+//
+//     vl_fprintf(stdout, VL_FORMAT("[", " ", "]", "%*.*f"), v);
+//     vl_fprintf(stdout, VL_FORMAT("", "", "", VL_FORMAT("[", " ", "]\n", "%*.*f")), m);
+//
+// Finally, you can take advantage of preprocessor string gluing to add prefixes
+// and suffixes to custom formats, e.g.,
+//
+//     vl_printf("Result: " VL_FMT_VF_INLINE " m/s\n", dir_ms);
+//     -> Result: [0.1 0.3 0.1] m/s
+//
+
+
+// --- Implementation ---------------------------------------------------------
+
+#ifndef VL_FORMAT
+
+#define VL_FORMAT(M_START, M_SEP, M_END, M_FMT) M_START "\0" M_FMT "\0\3" M_SEP "\0" M_END
+
+#define VL_FMT_F "%*.*f"
+
+#define VL_FMT_VF              VL_FORMAT("[", " ", "]", VL_FMT_F)
+#define VL_FMT_VF_ROUND        VL_FORMAT("(", " ", ")", VL_FMT_F)
+#define VL_FMT_VF_COL          VL_FORMAT("", "\n", "\n", "[ " VL_FMT_F " ]")
+#define VL_FMT_VF_C            VL_FORMAT("{ ", ", ", " }", VL_FMT_F "f")
+#define VL_FMT_VD_C            VL_FORMAT("{ ", ", ", " }", VL_FMT_F)
+#define VL_FMT_VF_PY           VL_FORMAT("[", ", ", "]", VL_FMT_F)
+
+#define VL_FMT_MF              VL_FORMAT("", "\n", "\n", VL_FMT_VF)
+#define VL_FMT_MF_INLINE       VL_FORMAT("[", " ", "]", VL_FMT_VF)
+#define VL_FMT_MF_C            VL_FORMAT("{\n", ",\n", "\n}\n", "  " VL_FMT_VF_C)
+#define VL_FMT_MF_C_INLINE     VL_FORMAT("{ ", ", ", " }", VL_FMT_VF_C)
+#define VL_FMT_MF_PY           VL_FORMAT("[", ",\n ", "]\n", VL_FMT_VF_PY)
+#define VL_FMT_MF_PY_INLINE    VL_FORMAT("[", ", ", "]", VL_FMT_VF_PY)
+
+#define VL_FMT_LF              VL_FORMAT("", ".\n", "\n", VL_FMT_MF)
+#define VL_FMT_LF_INLINE       VL_FORMAT("[", " ", "]", VL_FMT_MF_INLINE)
+#define VL_FMT_LF_C            VL_FORMAT("{\n", ",\n", "\n}\n", VL_FORMAT("  {\n", ",\n", "\n  }", "    " VL_FMT_VF_C))
+#define VL_FMT_LF_C_INLINE     VL_FORMAT("{ ", ", ", " }", VL_FMT_MF_C_INLINE)
+#define VL_FMT_LF_PY           VL_FORMAT("[", ",\n ", "]\n", VL_FORMAT("[", ",\n  ", "]", VL_FMT_VF_PY))
+#define VL_FMT_LF_PY_INLINE    VL_FORMAT("[", ", ", "]", VL_FMT_MF_PY_INLINE)
+
+#define VL_FMT_I "%*d"
+
+#define VL_FMT_VI              VL_FORMAT("[", " ", "]", VL_FMT_I)
+#define VL_FMT_VI_ROUND        VL_FORMAT("(", " ", ")", VL_FMT_I)
+#define VL_FMT_VI_COL          VL_FORMAT("", "\n", "\n", "[ " VL_FMT_I " ]")
+#define VL_FMT_VI_C            VL_FORMAT("{ ", ", ", " }", VL_FMT_I)
+#define VL_FMT_VI_PY           VL_FORMAT("[", ", ", "]", VL_FMT_I)
+
+#define VL_FMT_MI              VL_FORMAT("", "\n", "\n", VL_FMT_VI)
+#define VL_FMT_MI_INLINE       VL_FORMAT("[", " ", "]", VL_FMT_VI)
+#define VL_FMT_MI_C            VL_FORMAT("{\n", ",\n", "\n}\n", "  " VL_FMT_VI_C)
+#define VL_FMT_MI_C_INLINE     VL_FORMAT("{ ", ", ", " }", VL_FMT_VI_C)
+#define VL_FMT_MI_PY           VL_FORMAT("[", ",\n ", "]\n", VL_FMT_VI_PY)
+#define VL_FMT_MI_PY_INLINE    VL_FORMAT("[", ", ", "]", VL_FMT_VI_PY)
+
+#define VL_FMT_LI              VL_FORMAT("", ".\n", "\n", VL_FMT_MI)
+#define VL_FMT_LI_INLINE       VL_FORMAT("[", " ", "]", VL_FMT_MI_INLINE)
+#define VL_FMT_LI_C            VL_FORMAT("{\n", ",\n", "\n}\n", VL_FORMAT("  {\n", ",\n", "\n  }", "    " VL_FMT_VI_C))
+#define VL_FMT_LI_C_INLINE     VL_FORMAT("{ ", ", ", " }", VL_FMT_MI_C_INLINE)
+#define VL_FMT_LI_PY           VL_FORMAT("[", ",\n ", "]\n", VL_FORMAT("[", ",\n  ", "]", VL_FMT_VI_PY))
+#define VL_FMT_LI_PY_INLINE    VL_FORMAT("[", ", ", "]", VL_FMT_MI_PY_INLINE)
+
+#endif
+
+inline int vl_snprintf(char* str, size_t sz, const char* fmt, int n, const int* elts, int w, int p)
+{
+    char* lstr = str; size_t lsz = sz;
+    return vl_snprintf_adv(lstr, lsz, fmt, n, elts, w, p);
+}
+
+inline int vl_snprintf(char* str, size_t sz, const char* fmt, int r, int c, const int* elts, int w, int p)
+{
+    char* lstr = str; size_t lsz = sz;
+    return vl_snprintf_adv(lstr, lsz, fmt, r, c, elts, w, p);
+}
+
+inline int vl_snprintf(char* str, size_t sz, const char* fmt, int s, int r, int c, const int* elts, int w, int p)
+{
+    char* lstr = str; size_t lsz = sz;
+    return vl_snprintf_adv(lstr, lsz, fmt, s, r, c, elts, w, p);
+}
+
+inline int sn_adv(char*& str, size_t& size, int chars)
+{
+    size_t write = (size_t(chars) > size) ? size : chars;
+    str += write;
+    size -= write;
+    return chars;
+}
+
+#if VL_CXX_11
+
+template<class... Args> inline int snprintf_adv(char*& str, size_t& size, const char* fmt, Args... args)
+{
+    int chars = snprintf(str, size, fmt, args...);
+    size_t write = (size_t(chars) > size) ? size : chars;
+    str += write;
+    size -= write;
+    return chars;
+}
+
+template<class... Args> inline int snprintf_append(char* str, size_t size, const char* fmt, Args... args)
+{
+    while (*str && size)
+    {
+        str++;
+        size--;
+    }
+    return snprintf(str, size, fmt, args...);
+}
+
+template<class S, class... Args> S& ssprintf(S& str, const char* fmt, Args... args)
+{
+    size_t size = str.capacity();
+    str.resize(size);
+    int chars = snprintf(str.data(), size + 1, fmt, args...);
+    str.resize(chars);
+    if (chars >= size)
+        snprintf(str.data(), chars + 1, fmt, args...);
+    return str;
+}
+
+template<class S, class... Args> S& ssprintf_adv(S& str, size_t& cursor, const char* fmt, Args... args)
+{
+    size_t size = str.capacity();
+    VL_ASSERT(cursor <= size);
+
+    str.resize(size);
+    int chars = snprintf(str.data() + cursor, size + 1 - cursor, fmt, args...);
+    str.resize(cursor + chars);
+    if (cursor + chars >= size)
+        snprintf(str.data() + cursor, chars + 1, fmt, args...);
+    cursor += chars;
+    return str;
+}
+
+template<class S, class... Args> S& ssprintf_append(S& str, const char* fmt, Args... args)
+{
+    size_t cursor = str.size();
+    return ssprintf_adv(str, cursor, fmt, args...);
+}
+
+template<class S, class... Args> S& vl_ssprintf(S& str, const char* fmt, Args... args)
+{
+    size_t size = str.capacity();
+    str.resize(size);
+    int chars = vl_snprintf(str.data(), size + 1, fmt, args...);
+    str.resize(chars);
+    if (chars >= size)
+        vl_snprintf(str.data(), chars + 1, fmt, args...);
+    return str;
+}
+
+template<class S, class... Args> inline S& vl_ssprintf_adv(S& str, size_t& cursor, const char* fmt, Args... args)
+{
+    size_t size = str.capacity();
+    VL_ASSERT(cursor <= size);
+
+    str.resize(size);
+    int chars = vl_snprintf(str.data() + cursor, size + 1 - cursor, fmt, args...);
+    str.resize(cursor + chars);
+    if (cursor + chars >= size)
+        vl_snprintf(str.data() + cursor, chars + 1, fmt, args...);
+    cursor += chars;
+    return str;
+}
+
+template<class S, class... Args> S& vl_ssprintf_append(S& str, const char* fmt, Args... args)
+{
+    size_t cursor = str.size();
+    return vl_ssprintf_adv(str, cursor, fmt, args...);
+}
+
+template<class... Args> int vl_printf(Args... args)
+{
+    return vl_fprintf(stdout, args...);
+}
+
+template<class... Args> int vl_print(Args... args)
+{
+    return vl_fprint(stdout, args...);
+}
+
+#endif
+
+#endif
+
+#ifndef VL_NO_STDIO
+
+#ifndef VLI_PRINT_234_H
+#define VLI_PRINT_234_H
+
+
+// Print with default formatting
+int vl_fprint(FILE* file, const Vec2i& v, int width = 1, int precision = 3);
+int vl_fprint(FILE* file, const Vec3i& v, int width = 1, int precision = 3);
+int vl_fprint(FILE* file, const Vec4i& v, int width = 1, int precision = 3);
+int vl_fprint(FILE* file, const Mat2i& m, int width = 1, int precision = 3);
+int vl_fprint(FILE* file, const Mat3i& m, int width = 1, int precision = 3);
+int vl_fprint(FILE* file, const Mat4i& m, int width = 1, int precision = 3);
+
+// Print according to specific format, see VL_FORMAT from PrintBase.hpp
+int vl_fprintf(FILE* file, const char* format, const Vec2i& v, int width = 1, int precision = 3);
+int vl_fprintf(FILE* file, const char* format, const Vec3i& v, int width = 1, int precision = 3);
+int vl_fprintf(FILE* file, const char* format, const Vec4i& v, int width = 1, int precision = 3);
+int vl_fprintf(FILE* file, const char* format, const Mat2i& m, int width = 1, int precision = 3);
+int vl_fprintf(FILE* file, const char* format, const Mat3i& m, int width = 1, int precision = 3);
+int vl_fprintf(FILE* file, const char* format, const Mat4i& m, int width = 1, int precision = 3);
+
+// Print in format that can be compiled as C, 'name' is variable name.
+int vl_fprint_as_c(FILE* file, const char* name, const Vec2i& v, int width = 1, int precision = 3);
+int vl_fprint_as_c(FILE* file, const char* name, const Vec3i& v, int width = 1, int precision = 3);
+int vl_fprint_as_c(FILE* file, const char* name, const Vec4i& v, int width = 1, int precision = 3);
+int vl_fprint_as_c(FILE* file, const char* name, const Mat2i& m, int width = 1, int precision = 3);
+int vl_fprint_as_c(FILE* file, const char* name, const Mat3i& m, int width = 1, int precision = 3);
+int vl_fprint_as_c(FILE* file, const char* name, const Mat4i& m, int width = 1, int precision = 3);
+
+// Write string according to specific format, see VL_FORMAT from PrintBase.hpp
+int vl_snprintf(char* str, size_t size, const char* format, const Vec2i& v, int width = 1, int precision = 3);
+int vl_snprintf(char* str, size_t size, const char* format, const Vec3i& v, int width = 1, int precision = 3);
+int vl_snprintf(char* str, size_t size, const char* format, const Vec4i& v, int width = 1, int precision = 3);
+int vl_snprintf(char* str, size_t size, const char* format, const Mat2i& m, int width = 1, int precision = 3);
+int vl_snprintf(char* str, size_t size, const char* format, const Mat3i& m, int width = 1, int precision = 3);
+int vl_snprintf(char* str, size_t size, const char* format, const Mat4i& m, int width = 1, int precision = 3);
+
+// Variant that advances 'str' and reduces 'size' accordingly.
+int vl_snprintf_adv(char*& str, size_t& size, const char* format, const Vec2i& v, int width = 1, int precision = 3);
+int vl_snprintf_adv(char*& str, size_t& size, const char* format, const Vec3i& v, int width = 1, int precision = 3);
+int vl_snprintf_adv(char*& str, size_t& size, const char* format, const Vec4i& v, int width = 1, int precision = 3);
+int vl_snprintf_adv(char*& str, size_t& size, const char* format, const Mat2i& m, int width = 1, int precision = 3);
+int vl_snprintf_adv(char*& str, size_t& size, const char* format, const Mat3i& m, int width = 1, int precision = 3);
+int vl_snprintf_adv(char*& str, size_t& size, const char* format, const Mat4i& m, int width = 1, int precision = 3);
+
+#endif
+#endif
+
+#include <iostream>
+
+#ifndef VL_NO_IOSTREAM
+
+#ifndef VLI_STREAM_234_H
+#define VLI_STREAM_234_H
+
+
+
+
+// --- Stream Operators -------------------------------------------------------
+
+class Vec2i;
+class Vec3i;
+class Vec4i;
+class Mat2i;
+class Mat3i;
+class Mat4i;
+
+std::ostream& operator << (std::ostream& s, const Vec2i& v);
+std::istream& operator >> (std::istream& s, Vec2i& v);
+std::ostream& operator << (std::ostream& s, const Vec3i& v);
+std::istream& operator >> (std::istream& s, Vec3i& v);
+std::ostream& operator << (std::ostream& s, const Vec4i& v);
+std::istream& operator >> (std::istream& s, Vec4i& v);
+
+std::ostream& operator << (std::ostream& s, const Mat2i& m);
+std::istream& operator >> (std::istream& s, Mat2i& m);
+std::ostream& operator << (std::ostream& s, const Mat3i& m);
+std::istream& operator >> (std::istream& s, Mat3i& m);
+std::ostream& operator << (std::ostream& s, const Mat4i& m);
+std::istream& operator >> (std::istream& s, Mat4i& m);
+
+#endif
+#endif
+#undef VL_NO_REAL
+#undef VL_PRINT_INT
 
 #endif

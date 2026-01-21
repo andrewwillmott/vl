@@ -8,8 +8,6 @@
 
 #include "VL234f.hpp"
 
-#include <iostream>
-
 using std::cout;
 using std::endl;
 using std::ostream;
@@ -56,7 +54,7 @@ void Test2DStuff()
     cout << "det     : " << det(M) << endl;
     cout << "trace   : " << trace(M) << endl;
     cout << "inv     :\n" << inv(M) << endl;
-    cout << "M * inv :\n" << M * inv(M) << "\n" << endl;
+    cout << "M * inv :\n" << M * inv(M) << endl;
 
     cout << "Vec2 consts: " << Vec2f(vl_0) << Vec2f(vl_x)
          << Vec2f(vl_y) << Vec2f(vl_1) << endl;
@@ -74,7 +72,7 @@ void Test2DStuff()
     cout << "det     : " << det(M) << endl;
     cout << "trace   : " << trace(M) << endl;
     cout << "inv     :\n" << inv(M) << endl;
-    cout << "M * inv :\n" << M * inv(M) << "\n" << endl;
+    cout << "M * inv :\n" << M * inv(M) << endl;
 
     M *= I;
     cout << "M *= I  :\n" << M << endl;
@@ -262,9 +260,15 @@ void TestH3DStuff()
     cout << "\n+ TestH3DStuff\n\n";
 
     Vec3f x = Vec3f(1,2,3);
-    cout << "x is: " << x << endl;
+//    cout << "x is: " << x << endl;
+    vl_fprintf(stdout, "x is: " VL_FMT_VF "\n", x, 1, 0);
 
-    cout << "rot(pi/2, vl_x) is: " <<  Rot3f(vl_x, vl_halfPi) << endl;
+#define VL_FMT_MFC VL_FORMAT("[", "\n ", "]\n", VL_FMT_VF)
+
+    vl_fprintf(stdout, "rot(pi/2, vl_x) is: " VL_FMT_MFC "\n", Rot3f(vl_x, vl_halfPi), 1, 0);
+
+//    cout << "rot(pi/2, vl_x) is: " <<  Rot3f(vl_x, vl_halfPi) << endl;
+
     x = x * Rot3f(vl_x, vl_halfPi);
     cout << "x after rot(pi/2, vl_x) is: " << x << endl;
     x = x * Scale3f(Vec3f(0.3, 0.2, 0.3));

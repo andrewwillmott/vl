@@ -14,14 +14,17 @@ VL_NS_END
 #include <string.h>
 VL_NS_BEGIN
 
-inline int SpanFormat(int level, const char* format)
+namespace
 {
-    int c = 0;
+    inline int SpanFormat(int level, const char* format)
+    {
+        int c = 0;
 
-    for (int i = 0; i < level; i++)
-        while (format[c++] != '\3')
-            ;
-    return c - 1;
+        for (int i = 0; i < level; i++)
+            while (format[c++] != '\3')
+                ;
+        return c - 1;
+    }
 }
 
 int vl_fprintf(FILE* file, const char* format, int n, const TElt* v, int width, int precision)

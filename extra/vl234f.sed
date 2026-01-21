@@ -34,3 +34,8 @@ s/ HRTrans4/ HRTrans4f/g
 s/ HTrans4/ HTrans4f/g
 /\#include/d
 /^\/\*/,/\*\//d
+s/VL_VEC\([234]\)_H/VLF_VEC\1_H/g
+s/VL_MAT\([234]\)_H/VLF_MAT\1_H/g
+s/VL_SWIZZLE_H/VLF_SWIZZLE_H/g
+s/VL_PRINT_234_H/VLF_PRINT_234_H/g
+s/VL_STREAM_234_H/VLF_STREAM_234_H/g

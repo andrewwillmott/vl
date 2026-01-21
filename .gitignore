@@ -1,7 +1,11 @@
 *.o
 *.a
 test/vltest
-extra/vl234test
+test/vltestint
+extra/vl234f_test
+extra/vl234i_test
 build/VLConfig.hpp
 out.txt
+outi.txt
+outf.txt
 .DS_Store

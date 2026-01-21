@@ -84,14 +84,14 @@ void Test2DStuff()
     cout << "det     : "  << det(M) << endl;
     cout << "trace   : "  << trace(M) << endl;
     cout << "inv     :\n" << inv(M) << endl;
-    cout << "M * inv :\n" << clamped(M * inv(M)) << "\n" << endl;
+    cout << "M * inv :\n" << M * inv(M) << endl;
 
     cout << "Vec2 consts: " << Vec2f(vl_0) << Vec2f(vl_x)
          << Vec2f(vl_y) << Vec2f(vl_1) << endl;
     cout << "Mat2 consts:\n" << Mat2d(vl_0) << endl << Mat2d(vl_I)
          << endl << Mat2d(vl_1) << "\n\n";
 
-    M = Rot2d(1.3) * Scale2d(Vec2d(2,1));
+    M = CRot2d(1.3) * Scale2d(Vec2d(2,1));
 
     cout << "M       :\n" << M << endl;
 
@@ -102,7 +102,7 @@ void Test2DStuff()
     cout << "det     : "  << det(M) << endl;
     cout << "trace   : "  << trace(M) << endl;
     cout << "inv     :\n" << inv(M) << endl;
-    cout << "M * inv :\n" << clamped(M * inv(M)) << "\n" << endl;
+    cout << "M * inv :\n" << M * inv(M) << endl;
 
     M *= I;
     cout << "M *= I  :\n" << M << endl;
@@ -151,14 +151,14 @@ void Test3DStuff()
     cout << "det     : "  << det(M) << endl;
     cout << "trace   : "  << trace(M) << endl;
     cout << "inv     :\n" << inv(M) << endl;
-    cout << "M * inv :\n" << clamped(M * inv(M)) << endl;
+    cout << "M * inv :\n" << M * inv(M) << endl;
 
     cout << "Vec3 consts: " << Vec3f(vl_0) << Vec3f(vl_x)
          << Vec3f(vl_y) << Vec3f(vl_z) << Vec3f(vl_1) << endl;
     cout << "Mat3 consts:\n" << Mat3d(vl_0) << endl << Mat3d(vl_I)
          << endl << Mat3d(vl_1) << "\n\n";
 
-    M = Rot3d(vl_y, 1.3) * Scale3d(Vec3d(2,4,2));
+    M = CRot3d(vl_y, 1.3) * Scale3d(Vec3d(2,4,2));
 
     cout << "M       :\n" << M << endl;
 
@@ -169,7 +169,7 @@ void Test3DStuff()
     cout << "det     : "  << det(M) << endl;
     cout << "trace   : "  << trace(M) << endl;
     cout << "inv     :\n" << inv(M) << endl;
-    cout << "M * inv :\n" << clamped(M * inv(M)) << endl;
+    cout << "M * inv :\n" << M * inv(M) << endl;
 
     M *= I;
     cout << "M *= I  :\n" << M << endl;
@@ -221,7 +221,7 @@ void Test4DStuff()
     cout << "det     : "  << det(M) << endl;
     cout << "trace   : "  << trace(M) << endl;
     cout << "inv     :\n" << inv(M) << endl;
-    cout << "M * inv :\n" << clamped(M * inv(M)) << endl;
+    cout << "M * inv :\n" << M * inv(M) << endl;
 
     cout << "Vec4 consts: " << Vec4f(vl_0) << Vec4f(vl_x) << Vec4f(vl_y)
          << Vec4f(vl_z) << Vec4f(vl_w) << Vec4f(vl_1) << endl;
@@ -229,7 +229,7 @@ void Test4DStuff()
          << Mat4d(vl_1) << "\n\n";
 
     M = HScale4d(Vec3d(2,3,4));
-    M *= HRot4d(vl_y, 1.256);
+    M *= HCRot4d(vl_y, 1.256);
 
     cout << "M       :\n" << M << endl;
 
@@ -240,7 +240,7 @@ void Test4DStuff()
     cout << "det     : "  << det(M) << endl;
     cout << "trace   : "  << trace(M) << endl;
     cout << "inv     :\n" << inv(M) << endl;
-    cout << "M * inv :\n" << clamped(M * inv(M)) << endl;
+    cout << "M * inv :\n" << M * inv(M) << endl;
 
     M *= I;
     cout << "M *= I  :\n" << M << endl;
@@ -263,8 +263,8 @@ void TestH2DStuff()
     Vec2f x = Vec2f(1,2);
     cout << "x is: " << x << endl;
 
-    cout << "rot(pi/2) is: " <<  Rot2d(vl_halfPi) << endl;
-    x = Rot2d(vl_halfPi) * x;
+    cout << "rot(pi/2) is: " <<  CRot2d(vl_halfPi) << endl;
+    x = CRot2d(vl_halfPi) * x;
     cout << "x after rot(pi/2) is: " << x << endl;
     x = Scale2d(Vec2d(0.3, 0.2)) * x;
     cout << "x after scale(0.3, 0.2) is: " << x << endl;
@@ -276,8 +276,8 @@ void TestH2DStuff()
 
     x = proj
         (
-              HRot3d(1.3)
-            * HTrans3d(Vec2d(1,1))
+              HCRot3d(1.3)
+            * HCTrans3d(Vec2d(1,1))
             * HScale3d(Vec2d(1,2))
             * Vec3f(x, 1)
         );
@@ -292,8 +292,8 @@ void TestH3DStuff()
     Vec3f x = Vec3f(1,2,3);
     cout << "x is: " << x << endl;
 
-    cout << "rot(pi/2, vl_x) is: " <<  Rot3d(vl_x, vl_halfPi) << endl;
-    x = x * Rot3d(vl_x, vl_halfPi);
+    cout << "rot(pi/2, vl_x) is: " <<  CRot3d(vl_x, vl_halfPi) << endl;
+    x = x * CRot3d(vl_x, vl_halfPi);
     cout << "x after rot(pi/2, vl_x) is: " << x << endl;
     x = x * Scale3d(Vec3d(0.3, 0.2, 0.3));
     cout << "x after scale(0.3, 0.2, 0.3) is: " << x << endl;
@@ -303,7 +303,7 @@ void TestH3DStuff()
     x = proj(y);
     cout << "proj(y) is: " << x << endl;
 
-    x = proj(HRot4d(vl_x, 1.3) * HTrans4d(vl_1) * HScale4d(Vec3d(1,2,1)) * y);
+    x = proj(HCRot4d(vl_x, 1.3) * HCTrans4d(vl_1) * HScale4d(Vec3d(1,2,1)) * y);
     cout << "HRot4(vl_x, 1.3) * HTrans4(vl_1) "
         "* HScale4(Vec3(1,2,1)) * y = " << x << endl;
 }
@@ -495,8 +495,8 @@ void TestNDNumerical()
     Q1 = inv(P1);
     cout << Q1 << endl;
 
-    cout << "\nP1 * inv(P1): " << endl << clamped(P1 * Q1) << endl;
-    cout << "\ninv(P) - inv(P1): " << endl << clamped(inv(P) - inv(P1));
+    cout << "\nP1 * inv(P1):" << endl << clamped(P1 * Q1) << endl;
+    cout << "\ninv(P) - inv(P1):" << endl << clamped(inv(P) - inv(P1));
     cout << endl << endl;
 
     // --- SolveOverRelax -----------------------------------------------------
@@ -537,7 +537,7 @@ void TestNDNumerical()
     cout << "start x: " << x << endl;
 
     int steps = 100;
-    error = SolveConjGrad(A, x, b, 1e-12, &steps);
+    error = SolveConjGrad(A, x, b, 1e-12f, &steps);
 
     cout << "iterations: " << steps << endl;
     cout << "x: " << x << endl;

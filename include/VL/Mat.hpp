@@ -148,8 +148,9 @@ public:
 
     TMat(int rows, int cols);                   // Uninitialised rows x cols matrix
     TMat(int rows, int cols, double elt0, ...); // Mat(2, 2, 1.0, 2.0, 3.0, 4.0)
+    TMat(int rows, int cols, int elt0, ...);    // Mat(2, 2, 1, 2, 3, 4)
     TMat(std::initializer_list<TVec>);          // Mat({row_v0, row_v1, ...})
-    
+
     TMat(TConstRefVec diagonal);                // diag(M) = diagonal
     TMat(int rows, int cols, VLDiag  k);        // diagonal matrix k
     TMat(int rows, int cols, VLBlock k);        // block matrix k

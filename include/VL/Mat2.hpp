@@ -100,7 +100,9 @@ TMat2  trans(const TMat2& m);                  // Transpose
 TElt   trace(const TMat2& m);                  // Trace
 TMat2  adj  (const TMat2& m);                  // Adjoint
 TElt   det  (const TMat2& m);                  // Determinant
+#ifndef VL_NO_REAL
 TMat2  inv  (const TMat2& m);                  // Inverse
+#endif
 TMat2  abs  (const TMat2& m);                  // abs(m_ij)
 TMat2  oprod(const TVec2& a, const TVec2& b);  // Outer product
 

@@ -152,6 +152,26 @@ TMat::TMat(int r, int c, double elt0, ...) : TRefMat(r, c, VL_NEW TElt[r * c])
     va_end(ap);
 }
 
+TMat::TMat(int r, int c, int elt0, ...) : TRefMat(r, c, VL_NEW TElt[r * c])
+{
+    VL_ASSERT_MSG(data != 0, "(Mat) Out of memory");
+    VL_ASSERT_MSG(rows > 0 && cols > 0, "(Mat) illegal matrix size");
+
+    va_list ap;
+    va_start(ap, elt0);
+
+    data[0] = TElt(elt0);
+
+    for (int i = 1; i < cols; i++)
+        (*this)[0].data[i] = TElt(va_arg(ap, int));
+
+    for (int i = 1; i < rows; i++)
+        for (int j = 0; j < cols; j++)
+            (*this)(i, j) = TElt(va_arg(ap, int));
+
+    va_end(ap);
+}
+
 TMat::TMat(std::initializer_list<TVec> l) : TRefMat(int(l.size()), 0, nullptr)
 {
     for (const TVec& v : l)
@@ -456,7 +476,7 @@ void Multiply(TConstRefMat a, TConstRefMat b, TRefMat r)
 {
     VL_ASSERT_MSG(a.cols == b.rows, "(Mat::*m) Matrix dimensions don't match");
     VL_ASSERT_MSG(r.cols == b.cols, "(Mat::*m) Matrix dimensions don't match");
-    VL_ASSERT_MSG(r.rows == a.rows, "(Mat::*m) Matrix dimensions don't match");    
+    VL_ASSERT_MSG(r.rows == a.rows, "(Mat::*m) Matrix dimensions don't match");
 
     for (int i = 0; i < a.rows; i++)
         Multiply(a[i], b, r[i]);

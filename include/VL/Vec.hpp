@@ -134,6 +134,7 @@ public:
 
     TVec(int n);                        // Uninitialised vector
     TVec(int n, double elt0, ...);      // Vec(3, 1.1, 2.0, 3.4)
+    TVec(int n, int elt0, ...);         // Vec(3, 1, 2, 3)
     TVec(std::initializer_list<TElt>);  // Vec(1.1, 2.0, 3.4)
 
     TVec(int n, VLBlock k);             // VLBlock vector (vl_0, vl_1 ...)
@@ -166,7 +167,7 @@ public:
 };
 
 
-class TConstVec : public TConstRefVec  
+class TConstVec : public TConstRefVec
 // ConstRefVec with associated storage. Use in place of 'const Vec'.
 {
 public:
