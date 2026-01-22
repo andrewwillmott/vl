@@ -2705,6 +2705,8 @@ inline const Vec4i reverse(const Vec4i& v) { return Vec4i(v.w, v.z, v.y, v.x); }
 
 #include <stdio.h>
 
+#include <string.h>
+
 #ifndef VL_PRINT_BASE_H
 #define VL_PRINT_BASE_H
 

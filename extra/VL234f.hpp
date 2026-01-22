@@ -3176,6 +3176,8 @@ inline Vec3f HProj(const Mat4f& m, Vec3f v)
 
 #include <stdio.h>
 
+#include <string.h>
+
 #ifndef VL_PRINT_BASE_H
 #define VL_PRINT_BASE_H
 

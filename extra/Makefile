@@ -67,6 +67,7 @@ vl234f_no_io: vl234f_base
 
 vl234f: vl234f_base
 	@echo "\n#include <stdio.h>"                    >> VL234f.hpp
+	@echo "\n#include <string.h>"                   >> VL234f.hpp
 	@sed $(VL234F_SUBS) ../include/VL/PrintBase.hpp >> VL234f.hpp
 	@sed $(VL234F_SUBS) ../include/VL/Print234.hpp  >> VL234f.hpp
 	@echo "\n#include <iostream>"                   >> VL234f.hpp
@@ -134,6 +135,7 @@ vl234i_no_io: vl234i_base
 
 vl234i: vl234i_base
 	@echo "\n#include <stdio.h>"                    >> VL234i.hpp
+	@echo "\n#include <string.h>"                   >> VL234i.hpp
 	@sed $(VL234I_SUBS) ../include/VL/PrintBase.hpp >> VL234i.hpp
 	@sed $(VL234I_SUBS) ../include/VL/Print234.hpp  >> VL234i.hpp
 	@echo "\n#include <iostream>"                   >> VL234i.hpp
